@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import feed from './pages/feed'
+import FeedPage from './pages/feed'
 
 function App() {
 
@@ -6,6 +8,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path='/'></Route>
+
+        <Route path='/feed' element={<FeedPage/>}></Route>
+
       </Routes>
     </BrowserRouter>
   )
