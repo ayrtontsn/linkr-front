@@ -1,28 +1,38 @@
-import { useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import userContext from "../contexts/userContext";
-import tokenContext from "../contexts/tokenContext";
 import styled from "styled-components";
+import newPost from "../components/newPost";
+import { useState } from "react";
 
 export default function FeedPage(){
     //const navigate = useNavigate();
     //const {user, setUser} = useContext(userContext)
     //const {token, useToken} = useContext(tokenContext)
+    const [activeMenu, setActiveMenu] = useState(false)
 
     return(
         <Back>
             <Header>
                 <h1>Linkr</h1>
-                <Menu></Menu>
+                <Menu onClick={() => setActiveMenu(!activeMenu)}>
+                    <Img></Img>
+                    <ion-icon name="menu"></ion-icon>
+                </Menu>
+                <AbaMenu $active = {activeMenu}>
+                    <BotaoMenu >Meu Perfil</BotaoMenu>
+                    <BotaoMenu>Sair</BotaoMenu>
+                </AbaMenu>
+
             </Header>
+            <Title><h2>Feed</h2></Title>
+            {newPost()}
         </Back>
     )
 
 }
 
 const Back = styled.div`
-    display: block;
     position: fixed;
+    display: block;
+    justify-items: center;
     background-color: #333333;
     width: 100vw;
     height: 100vh;
@@ -30,9 +40,6 @@ const Back = styled.div`
 `
 const Header = styled.div`
     display: flex;
-    position: fixed;
-    left: 0;
-    top: 0;
     width: 98%;
     height: 72px;
     align-items: center;
@@ -50,11 +57,74 @@ const Header = styled.div`
         letter-spacing: 5%;
 
     }
+
+    @media (max-width: 680px) {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+    }
 `
 
 const Menu = styled.div`
-    display: block;
-    background-color: #1014d6;
+    display: flex;
+    align-items:center;
+    justify-content: center;
     width: 97px;
     height: 80%;
+    font-size: 50px;
+    color: #FFFFFF;
+    background-color: #333333;
+    border-radius: 10px;
+    padding: 3px;
+`
+
+const Img = styled.div`
+    border-radius: 10px;
+    width:53px;
+    height: 53px;
+    background-color: #f10909;
+
+    @media (max-width: 680px) {
+        display: none;
+    }
+`
+
+const Title = styled.div`
+    
+    display: contents;
+    width: 100vw;
+
+    h2{
+        color: #FFFFFF;
+        font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        font-size: 43px;
+        font-weight: 700px;
+        margin: 10px;
+    }
+`
+
+const AbaMenu = styled.div`
+    display: ${props => (props.$active ? "block" : "none")};
+    width: 100px;
+    position: fixed;
+    right: 5px;
+
+    @media (max-width: 680px) {
+        bottom: 80px;
+    }
+    
+    @media (min-width: 681px) {
+        top: 80px;
+    }
+
+`
+
+const BotaoMenu = styled.button`
+        background-color: #000000;
+        color: #FFFFFF;
+        width: 100%;
+        height: 40px;
+        margin-top: 5px;
+        border: 0;
+        border-radius: 5px;
 `
