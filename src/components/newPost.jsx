@@ -1,12 +1,36 @@
+import axios from "axios";
 import { useState } from "react"
 import styled from "styled-components"
+import { BACKEND, TOKEN_USER } from "./mock";
 
-export default function newPost(){
+export default function newPost(activeNewPost){
     const [url, setUrl] = useState("")
     const [description, setDescription] = useState("")
 
+    const auth = {
+        headers: {
+            Authorization: `Bearer ${TOKEN_USER}`
+        }
+    }
+
+    function createPost(e) {
+        e.preventDefault();
+
+        const requisition = axios.post(BACKEND,{
+            url,
+            description
+        }, auth)
+        .then((response) => {
+            setUrl(()=>""),
+            setDescription(()=>"")
+        })
+        .catch((e) => {
+            alert(e.response.data.message)
+        })
+    }
+
     return(
-        <NewPost onSubmit={"teste"}>
+        <NewPost onSubmit={createPost} $active = {activeNewPost}>
             <Img></Img>
             <NewPostForm>
                 O que você tem pra compartilhar hoje?
@@ -39,6 +63,13 @@ const NewPost = styled.form`
     padding:10px 10px 0 10px;
     font-weight: 300;
     font-size: 20px;
+
+    @media (max-width: 680px) {
+        display: ${props => (props.$active ? "flex" : "none")};
+        position: fixed;
+        bottom: 80px;
+        left: 2.5%;
+    }
 `
 
 const Img = styled.div`

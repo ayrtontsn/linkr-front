@@ -7,11 +7,15 @@ export default function FeedPage(){
     //const {user, setUser} = useContext(userContext)
     //const {token, useToken} = useContext(tokenContext)
     const [activeMenu, setActiveMenu] = useState(false)
+    const [activeNewPost, setActiveNewPost] = useState(false)
 
     return(
         <Back>
             <Header>
                 <h1>Linkr</h1>
+                <NewPost onClick={() => setActiveNewPost(!activeNewPost)}>
+                    <ion-icon name="create"></ion-icon>
+                </NewPost>
                 <Menu onClick={() => setActiveMenu(!activeMenu)}>
                     <Img></Img>
                     <ion-icon name="menu"></ion-icon>
@@ -23,7 +27,7 @@ export default function FeedPage(){
 
             </Header>
             <Title><h2>Feed</h2></Title>
-            {newPost()}
+            {newPost(activeNewPost)}
         </Back>
     )
 
@@ -62,6 +66,18 @@ const Header = styled.div`
         position: fixed;
         bottom: 0;
         left: 0;
+    }
+`
+
+const NewPost = styled.div`
+    display: flex;
+    align-items:center;
+    justify-content: center;
+    font-size: 50px;
+    color: #FFFFFF;
+
+    @media (min-width: 681px) {
+        display: none;
     }
 `
 
