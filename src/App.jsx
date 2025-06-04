@@ -1,14 +1,13 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import GlobalStyle from './styles/GlobalStyle';
+import Linkr from './Linkr'
 
 function App() {
-
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/'></Route>
-      </Routes>
-    </BrowserRouter>
-  )
+    <>
+      <GlobalStyle />
+      <Linkr />
+    </>
+  );
 }
 
-export default App
+export default App;
