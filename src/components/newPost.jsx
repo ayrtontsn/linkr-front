@@ -13,20 +13,20 @@ export default function newPost(activeNewPost){
         }
     }
 
-    function createPost(e) {
+    async function createPost(e) {
         e.preventDefault();
 
-        const requisition = axios.post(BACKEND,{
-            url,
-            description
-        }, auth)
-        .then((response) => {
-            setUrl(()=>""),
-            setDescription(()=>"")
-        })
-        .catch((e) => {
+        try {
+            await axios.post(`${BACKEND}/newpost`,{
+                url,
+                description
+            }, auth)
+        } catch (e) {
             alert(e.response.data.message)
-        })
+        } finally {
+            setUrl("")
+            setDescription("")
+        }
     }
 
     return(
