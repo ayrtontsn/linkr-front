@@ -68,7 +68,7 @@ const NewPost = styled.form`
         display: ${props => (props.$active ? "flex" : "none")};
         position: fixed;
         bottom: 80px;
-        left: 2.5%;
+        left: calc(5% - 10px);
     }
 `
 

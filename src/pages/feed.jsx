@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import newPost from "../components/newPost";
 import { useState } from "react";
+import posts from "../components/posts";
 
 export default function FeedPage(){
     //const navigate = useNavigate();
@@ -27,11 +28,18 @@ export default function FeedPage(){
 
             </Header>
             <Title><h2>Feed</h2></Title>
-            {newPost(activeNewPost)}
+            <FeedPost>
+                {newPost(activeNewPost)}
+                {posts()}
+            </FeedPost>
+
         </Back>
     )
 
 }
+const FeedPost = styled.div`
+    display: block;
+`
 
 const Back = styled.div`
     position: fixed;
