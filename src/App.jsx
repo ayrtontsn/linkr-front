@@ -1,18 +1,13 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import FeedPage from './pages/feed'
+import GlobalStyle from './styles/GlobalStyle';
+import Linkr from './Linkr'
 
 function App() {
-
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/'></Route>
-
-        <Route path='/feed' element={<FeedPage/>}></Route>
-
-      </Routes>
-    </BrowserRouter>
-  )
+    <>
+      <GlobalStyle />
+      <Linkr />
+    </>
+  );
 }
 
-export default App
+export default App;
