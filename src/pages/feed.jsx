@@ -1,14 +1,32 @@
 import styled from "styled-components";
 import newPost from "../components/newPost";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import posts from "../components/posts";
+import { useNavigate } from "react-router-dom";
+import TokenContext from "../contexts/TokenContext";
 
 export default function FeedPage(){
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
+    const { setToken } = useContext(TokenContext);
     //const {user, setUser} = useContext(userContext)
     //const {token, useToken} = useContext(tokenContext)
     const [activeMenu, setActiveMenu] = useState(false)
     const [activeNewPost, setActiveNewPost] = useState(false)
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        setToken(null);
+        setActiveMenu(false);
+        navigate("/");
+    };
+
+    const handleMenuToggle = () => {
+        setActiveMenu(!activeMenu);
+    };
+
+    const handleMenuItemClick = () => {
+        setActiveMenu(false);
+    };
 
     return(
         <Back>
@@ -17,13 +35,13 @@ export default function FeedPage(){
                 <NewPost onClick={() => setActiveNewPost(!activeNewPost)}>
                     <ion-icon name="create"></ion-icon>
                 </NewPost>
-                <Menu onClick={() => setActiveMenu(!activeMenu)}>
+                <Menu onClick={handleMenuToggle}>
                     <Img></Img>
                     <ion-icon name="menu"></ion-icon>
                 </Menu>
                 <AbaMenu $active = {activeMenu}>
-                    <BotaoMenu >Meu Perfil</BotaoMenu>
-                    <BotaoMenu>Sair</BotaoMenu>
+                    <BotaoMenu onClick={handleMenuItemClick}>Meu Perfil</BotaoMenu>
+                    <BotaoMenu onClick={handleLogout}>Sair</BotaoMenu>
                 </AbaMenu>
 
             </Header>
@@ -151,4 +169,5 @@ const BotaoMenu = styled.button`
         margin-top: 5px;
         border: 0;
         border-radius: 5px;
+        cursor: pointer;
 `
