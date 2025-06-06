@@ -4,7 +4,6 @@ import SignUpPage from "./pages/SignUpPage";
 import FeedPage from "./pages/feed";
 import { useState } from "react";
 import TokenContext from "./contexts/TokenContext";
-import FeedPage from "./pages/feed";
 
 export default function TrackIt() {
   const [token, setToken] = useState(localStorage.getItem("token"));
