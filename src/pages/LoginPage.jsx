@@ -15,6 +15,7 @@ import {
   ErrorMessage,
 } from "../components/FormComponents.js";
 import Swal from "sweetalert2";
+import { BACKEND } from "../components/mock.js";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -84,7 +85,7 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-    const URLSignIn = "http://localhost:5000/";
+    const URLSignIn = `${BACKEND}/`;
 
     axios
       .post(URLSignIn, validation.formattedData)

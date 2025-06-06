@@ -1,31 +1,44 @@
 import axios from "axios";
-import { useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import styled from "styled-components"
-import { BACKEND, TOKEN_USER } from "./mock";
+import { BACKEND } from "./mock";
+import TokenContext from "../contexts/TokenContext";
+import Swal from "sweetalert2";
 
 export default function newPost(activeNewPost){
     const [url, setUrl] = useState("")
     const [description, setDescription] = useState("")
+    const [buttonPublicar, setbuttonPublicar] = useState("Publicar")
+    const {token, setToken} = useContext(TokenContext)
 
     const auth = {
         headers: {
-            Authorization: `Bearer ${TOKEN_USER}`
+            Authorization: `Bearer ${token}`
         }
     }
 
     async function createPost(e) {
-        e.preventDefault();
+        setbuttonPublicar("Carregando...")
 
         try {
             await axios.post(`${BACKEND}/newpost`,{
                 url,
                 description
             }, auth)
-        } catch (e) {
-            alert(e.response.data.message)
-        } finally {
             setUrl("")
             setDescription("")
+            setbuttonPublicar("Publicar")
+        } catch (e) {
+            
+            Swal.fire({
+                icon: "error",
+                title: "Erro no link",
+                text: "Houve um erro ao publicar seu link.",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#1877f2",
+            });
+            setbuttonPublicar("Publicar")
+            console.log(e)
         }
     }
 
@@ -46,7 +59,10 @@ export default function newPost(activeNewPost){
                     onChange={e => setDescription(e.target.value)}
                     value={description}
                     />
-                <Button $url={url.length} type="submit">Publicar</Button>
+                <Button
+                    type="submit"
+                    $disabled={buttonPublicar==="Publicar" && url?false:true}
+                >{buttonPublicar}</Button>
             </NewPostForm>
         </NewPost>
     )
@@ -64,11 +80,14 @@ const NewPost = styled.form`
     font-weight: 300;
     font-size: 20px;
 
+    z-index: 2;
+
     @media (max-width: 680px) {
         display: ${props => (props.$active ? "flex" : "none")};
         position: fixed;
         bottom: 80px;
-        left: calc(5% - 10px);
+        left: 50%;
+        transform: translate(-50%, 0);
     }
 `
 
@@ -91,6 +110,7 @@ const NewPostForm = styled.div`
 
     @media (max-width: 680px){
         width: 100vw;
+        
     }
 `
 
@@ -115,5 +135,5 @@ const Button = styled.button`
     border-radius: 5px;
     border: 0;
     margin-top: 5px;
-    opacity:${props => (props.$url?1:0.3)};
+    opacity:${props => (props.$disabled?0.3:1)};
 `

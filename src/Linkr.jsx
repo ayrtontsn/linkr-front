@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import { useState } from "react";
 import TokenContext from "./contexts/TokenContext";
+import FeedPage from "./pages/feed";
 
 export default function TrackIt() {
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -15,6 +16,7 @@ export default function TrackIt() {
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
+          <Route path="/feed" element={<FeedPage />} />
         </Routes>
       </BrowserRouter>
     </TokenContext.Provider>

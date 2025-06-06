@@ -1,11 +1,12 @@
 import styled from "styled-components"
 import { BACKEND, TOKEN_USER } from "./mock"
 import axios from "axios"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { Oval } from "react-loader-spinner"
 
 export default function postFeed(){
 
-    const [allPosts, setAllPosts] = useState([])
+    const [allPosts, setAllPosts] = useState("")
 
     const auth = {
         headers: {
@@ -13,19 +14,44 @@ export default function postFeed(){
         }
     }
 
-    async function getAllPosts() {
-        try {
-            const allPosts = await axios.get(`${BACKEND}/allposts`, auth)
-            setAllPosts(allPosts.data)
+    useEffect(() =>{
+            const requisition = axios.get(`${BACKEND}/allposts`, auth)
+                                    .then(response => {setAllPosts(response.data)})
+                                    .catch(e => {
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: "Erro no carregamento dos posts",
+                                            text: "Um erro aconteceu. Atualize a página ou tente novamente em alguns minutos.",
+                                            confirmButtonText: "OK",
+                                            confirmButtonColor: "#1877f2",
+                                        })
+                                    })
             
-        } catch (e) {
-            alert(e.response.data.message)
-        }
+        }, [])
+
+    if(!allPosts){
+        console.log("teste")
+        return(
+            <Loading>
+                {(<Oval
+                    visible={true}
+                    height="100"
+                    width="100"
+                    color="#52B6FF"
+                    secondaryColor="#FFFFFF"
+                    ariaLabel="oval-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                />)}
+            </Loading>
+        )
     }
-    getAllPosts()
+    
     return (
         <>
-        
+            <NoItens $noitens={allPosts.length}>
+                <p>Tudo limpor por aqui, nenhuma postagem no momento...</p>
+            </NoItens>
         {allPosts.map(post => 
             <Post key={post.id}>
                 <User>
@@ -36,8 +62,8 @@ export default function postFeed(){
                     <ion-icon name="heart"></ion-icon>
                     <Box>
                         <Title><h1>{post.description}</h1></Title>
-                        <MetaData>
-                            <Title>
+                        <MetaData href={post.url} target="_blank">
+                            <Title >
                                 <h2>{post.dataTitle}</h2>
                                 <h3>{post.dataDescription}</h3>
                                 <p>{post.url}</p>
@@ -53,6 +79,7 @@ export default function postFeed(){
         </>
     )
 }
+
 
 const Post = styled.div`
     display:flex;
@@ -83,10 +110,12 @@ const Img = styled.img`
     margin-right:10px;
 `
 
-const MetaData = styled.div`
+const MetaData = styled.a`
     display: flex;
     border: 1px solid #4C4C4C;
-    border-radius: 5px;
+    border-radius: 10px;
+
+    text-decoration: none;
 
 `
 
@@ -100,22 +129,34 @@ const Content = styled.div`
 `
 
 const Title = styled.div`
+
+    display: block;
+    margin: 12px;
+
+
     h1{
         font-weight: 300;
         font-size: 16px;
         color: #B7B7B7;
+        margin: 0 -12px ;
+        
     }
 
     h2{
         font-weight: 400;
         font-size: 16px;
         color: #CECECE;
+        padding-bottom: 10px;
     }
 
     h3{
         font-weight: 300;
         font-size: 11px;
         color: #9B9595;
+        height: 60px;
+        margin-bottom: 12px;
+
+        overflow-y: hidden;
     }
 
     p{
@@ -130,9 +171,25 @@ const ImgMetaData = styled.img`
     border-radius: 10px;
     width:153px;
     height: 153px;
-    margin-right:10px;
 `
 
 const Box = styled.div`
     display: block;
+`
+
+const Loading = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 100px;
+`
+
+const NoItens = styled.div`
+    display: ${props => (props.$noitens ? "none" : "flex")};
+    font-size: 16px;
+    font-weight: 400;
+    text-align: left;
+    color: #FFFFFF;
+
+    margin: 50px;
 `

@@ -1,14 +1,21 @@
 import styled from "styled-components";
 import newPost from "../components/newPost";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import posts from "../components/posts";
+import { useNavigate } from "react-router-dom";
+import TokenContext from "../contexts/TokenContext";
 
 export default function FeedPage(){
-    //const navigate = useNavigate();
-    //const {user, setUser} = useContext(userContext)
-    //const {token, useToken} = useContext(tokenContext)
+    const navigate = useNavigate();
+    const {token, useToken} = useContext(TokenContext)
     const [activeMenu, setActiveMenu] = useState(false)
     const [activeNewPost, setActiveNewPost] = useState(false)
+
+    useEffect(() => {
+        if(!token){
+            navigate("/")
+        }
+    },[])
 
     return(
         <Back>
@@ -39,6 +46,9 @@ export default function FeedPage(){
 }
 const FeedPost = styled.div`
     display: block;
+    justify-items: center;
+    overflow-y: auto;
+    height: calc(98% - 125px);
 `
 
 const Back = styled.div`
@@ -52,21 +62,23 @@ const Back = styled.div`
 `
 const Header = styled.div`
     display: flex;
-    width: 98%;
+    width: 100%;
     height: 72px;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1% 0 1% ;
+    padding: 0 2% 0 2% ;
     background-color: #151515;
 
     z-index: 2;
 
     h1 {
+        font-family: "Passion One", sans-serif;
         color: #FFFFFF;
         font-size: 49px;
         font-weight: 700;
         line-height: 100%;
         letter-spacing: 5%;
+        word-spacing: 5%;
 
     }
 
@@ -120,7 +132,7 @@ const Title = styled.div`
 
     h2{
         color: #FFFFFF;
-        font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        font-family: "Passion One", sans-serif;
         font-size: 43px;
         font-weight: 700px;
         margin: 10px;
