@@ -1,20 +1,14 @@
 import styled from "styled-components";
 import newPost from "../components/newPost";
-<<<<<<< HEAD
-import { useState, useContext } from "react";
-=======
 import { useContext, useEffect, useState } from "react";
->>>>>>> likes/sugg
 import posts from "../components/posts";
 import { useNavigate } from "react-router-dom";
 import TokenContext from "../contexts/TokenContext";
+import suggestionsUsers from "../components/suggestions";
 
 export default function FeedPage(){
     const navigate = useNavigate();
-<<<<<<< HEAD
-    const { setToken } = useContext(TokenContext);
-    //const {user, setUser} = useContext(userContext)
-    //const {token, useToken} = useContext(tokenContext)
+    const {token, setToken } = useContext(TokenContext);
     const [activeMenu, setActiveMenu] = useState(false)
     const [activeNewPost, setActiveNewPost] = useState(false)
 
@@ -32,17 +26,12 @@ export default function FeedPage(){
     const handleMenuItemClick = () => {
         setActiveMenu(false);
     };
-=======
-    const {token, useToken} = useContext(TokenContext)
-    const [activeMenu, setActiveMenu] = useState(false)
-    const [activeNewPost, setActiveNewPost] = useState(false)
 
     useEffect(() => {
         if(!token){
             navigate("/")
         }
     },[])
->>>>>>> likes/sugg
 
     return(
         <Back>
@@ -64,11 +53,11 @@ export default function FeedPage(){
             <Title><h2>Feed</h2></Title>
             <Feed>
                 <Post>
-                {newPost(activeNewPost)}
-                {posts()}
+                    {newPost(activeNewPost)}
+                    {posts()}
                 </Post>
                 <Suggestions>
-
+                    {suggestionsUsers()}
                 </Suggestions>
             </Feed>
 
@@ -77,8 +66,9 @@ export default function FeedPage(){
 
 }
 const Feed = styled.div`
-    display: contents;
-    justify-items: center;    
+    display: flex;
+    justify-content: space-between;
+    width: 80%;  
 `
 
 const Post = styled.div`
@@ -90,10 +80,11 @@ const Post = styled.div`
 
 const Suggestions = styled.div`
     display: block;
-    justify-items: center;
-
-    @media (max-width: 680px) {
-        
+    height: fit-content;
+    width: 328px;
+    background-color: #151515;
+    @media (max-width: 1024px) {
+        display: none;
     }
 `
 

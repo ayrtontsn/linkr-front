@@ -7,7 +7,6 @@ import TokenContext from "../contexts/TokenContext"
 
 export default function postFeed(){
     const {token, setToken} = useContext(TokenContext)
-    const userName = "ayrton"
     const [allPosts, setAllPosts] = useState("")
 
     const auth = {
