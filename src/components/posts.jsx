@@ -1,16 +1,18 @@
 import styled from "styled-components"
-import { BACKEND, TOKEN_USER } from "./mock"
+import { BACKEND } from "./mock"
 import axios from "axios"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Oval } from "react-loader-spinner"
+import TokenContext from "../contexts/TokenContext"
 
 export default function postFeed(){
-
+    const {token, setToken} = useContext(TokenContext)
+    const userName = "ayrton"
     const [allPosts, setAllPosts] = useState("")
 
     const auth = {
         headers: {
-            Authorization: `Bearer ${TOKEN_USER}`
+            Authorization: `Bearer ${token}`
         }
     }
 
@@ -46,6 +48,11 @@ export default function postFeed(){
             </Loading>
         )
     }
+
+    async function like(postId) {
+        const requisition = axios.put(`${BACKEND}/likepost`, {postId},auth)
+                                .then(response => {setAllPosts(response.data)})
+    }
     
     return (
         <>
@@ -55,11 +62,14 @@ export default function postFeed(){
         {allPosts.map(post => 
             <Post key={post.id}>
                 <User>
-                    <Img src={post.dataImage ||null}></Img>
-                    {post.userId}
+                    <Img src={post.userImage ||null}></Img>
+                    {post.userName}
                 </User>
                 <Content>
-                    <ion-icon name="heart"></ion-icon>
+                    <Likes>
+                        <ion-icon name="heart" onClick={like}></ion-icon>
+                        <p>{post.likes.length} likes</p>
+                    </Likes>
                     <Box>
                         <Title><h1>{post.description}</h1></Title>
                         <MetaData href={post.url} target="_blank">
@@ -121,10 +131,12 @@ const MetaData = styled.a`
 
 const Content = styled.div`
     display: flex;
+    flex-direction: row;
     align-items: end;
-    ion-icon{
-        width: 20px;
-        color: #FFFFFF;        
+
+    @media (max-width: 680px) {
+        flex-direction: column-reverse;
+        align-items: start;
     }
 `
 
@@ -192,4 +204,24 @@ const NoItens = styled.div`
     color: #FFFFFF;
 
     margin: 50px;
+`
+
+const Likes = styled.div`
+    flex-direction: column;
+    ion-icon{
+        font-size: 18px;
+        color: #FFFFFF;
+        padding: 0 16px;     
+    }
+
+    p{
+        color: #FFFFFF;
+        size: 12px;
+    }
+
+    @media (max-width: 680px) {
+        display: flex;
+        flex-direction: row;
+        align-items: start;
+    }
 `

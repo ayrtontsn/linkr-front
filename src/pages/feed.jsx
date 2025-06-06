@@ -35,20 +35,39 @@ export default function FeedPage(){
 
             </Header>
             <Title><h2>Feed</h2></Title>
-            <FeedPost>
+            <Feed>
+                <Post>
                 {newPost(activeNewPost)}
                 {posts()}
-            </FeedPost>
+                </Post>
+                <Suggestions>
+
+                </Suggestions>
+            </Feed>
 
         </Back>
     )
 
 }
-const FeedPost = styled.div`
+const Feed = styled.div`
+    display: contents;
+    justify-items: center;    
+`
+
+const Post = styled.div`
     display: block;
     justify-items: center;
-    overflow-y: auto;
+    overflow-y: scroll;
     height: calc(98% - 125px);
+`
+
+const Suggestions = styled.div`
+    display: block;
+    justify-items: center;
+
+    @media (max-width: 680px) {
+        
+    }
 `
 
 const Back = styled.div`
