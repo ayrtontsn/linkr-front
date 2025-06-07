@@ -24,6 +24,7 @@ import {
   ErrorMessage,
 } from "../components/FormComponents.js";
 import Swal from "sweetalert2";
+import { BACKEND } from "../components/mock.js";
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -102,7 +103,7 @@ export default function SignUpPage() {
     }
 
     setLoading(true);
-    const URLSignUp = "http://localhost:5000/sign-up";
+    const URLSignUp = `${BACKEND}/sign-up`;
 
     axios
       .post(URLSignUp, validation.formattedData)

@@ -5,7 +5,7 @@ import FeedPage from "./pages/feed";
 import { useState } from "react";
 import TokenContext from "./contexts/TokenContext";
 
-export default function TrackIt() {
+export default function Linkr() {
   const [token, setToken] = useState(localStorage.getItem("token"));
 
   return (
