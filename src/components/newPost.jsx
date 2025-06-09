@@ -33,6 +33,7 @@ export default function newPost(activeNewPost, onNewPost){
                     ...response.data,
                     userImage: token.image,
                     userName: token.username,
+                    userId: token.id,
                     likes: response.data.likes || [] // Garantir que likes existe
                 };
                 

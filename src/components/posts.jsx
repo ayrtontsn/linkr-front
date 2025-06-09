@@ -100,8 +100,12 @@ export default function postFeed(allPosts, setAllPosts){
                 <User>
                     <Img src={post.userImage ||null}></Img>
                     {post.userName}
-                    <ion-icon name="create" onClick={() => handleEditClick(post)}></ion-icon>
-                    <ion-icon name="trash" onClick={() => handleDeleteClick(post.id)}></ion-icon>
+                    {token.id === post.userId && (
+                        <>
+                            <ion-icon name="create" onClick={() => handleEditClick(post)}></ion-icon>
+                            <ion-icon name="trash" onClick={() => handleDeleteClick(post.id)}></ion-icon>
+                        </>
+                    )}
                 </User>
                 <Content>
                     <Likes>
