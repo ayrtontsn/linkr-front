@@ -8,9 +8,8 @@ import Swal from "sweetalert2"
 import EditPostModal from "./EditPostModal";
 import DeletePostModal from "./DeletePostModal";
 
-export default function postFeed(){
+export default function postFeed(allPosts, setAllPosts){
     const {token} = useContext(TokenContext)
-    const [allPosts, setAllPosts] = useState("")
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPostData, setEditingPostData] = useState(null);
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
@@ -18,12 +17,12 @@ export default function postFeed(){
 
     const auth = {
         headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token.token}`
         }
     }
 
     useEffect(() =>{
-            console.log(auth)
+            if (!allPosts) {
             const requisition = axios.get(`${BACKEND}/allposts`, auth)
                                     .then(response => {setAllPosts(response.data)})
                                     .catch(e => {
@@ -35,7 +34,8 @@ export default function postFeed(){
                                             confirmButtonColor: "#1877f2",
                                         })
                                     })
-        }, [])
+                                }
+        }, [allPosts, setAllPosts])
 
     if(!allPosts){
         return(
@@ -98,8 +98,12 @@ export default function postFeed(){
                 <User>
                     <Img src={post.userImage ||null}></Img>
                     {post.userName}
-                    <ion-icon name="create" onClick={() => handleEditClick(post)}></ion-icon>
-                    <ion-icon name="trash" onClick={() => handleDeleteClick(post.id)}></ion-icon>
+                    {token.id === post.userId && (
+                        <>
+                            <ion-icon name="create" onClick={() => handleEditClick(post)}></ion-icon>
+                            <ion-icon name="trash" onClick={() => handleDeleteClick(post.id)}></ion-icon>
+                        </>
+                    )}
                 </User>
                 <Content>
                     <Likes>

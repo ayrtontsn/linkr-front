@@ -90,10 +90,10 @@ export default function LoginPage() {
     axios
       .post(URLSignIn, validation.formattedData)
       .then((res) => {
-        console.log(res);
+        console.log(res.data.image);
         setLoading(false);
         setToken(res.data);
-        localStorage.setItem("token", res.data);
+        localStorage.setItem("token", res.data.token);
         navigate("/feed");
       })
       .catch((err) => {

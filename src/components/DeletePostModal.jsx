@@ -38,7 +38,7 @@ export default function DeletePostModal({ isOpen, onClose, postId, onDelete }) {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token.token}`,
       },
     };
 

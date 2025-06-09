@@ -5,26 +5,41 @@ import { BACKEND } from "./mock";
 import TokenContext from "../contexts/TokenContext";
 import Swal from "sweetalert2";
 
-export default function newPost(activeNewPost){
+export default function newPost(activeNewPost, onNewPost){
     const [url, setUrl] = useState("")
     const [description, setDescription] = useState("")
     const [buttonPublicar, setbuttonPublicar] = useState("Publicar")
-    const {token, setToken} = useContext(TokenContext)
+    const {token} = useContext(TokenContext)
 
     const auth = {
         headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token.token}`
         }
     }
 
     async function createPost(e) {
+        e.preventDefault();
         setbuttonPublicar("Carregando...")
 
         try {
-            await axios.post(`${BACKEND}/newpost`,{
+             const response = await axios.post(`${BACKEND}/newpost`,{
                 url,
                 description
             }, auth)
+
+            if (onNewPost && response.data) {
+                // Complete the post data with user information
+                const completePost = {
+                    ...response.data,
+                    userImage: token.image,
+                    userName: token.username,
+                    userId: token.id,
+                    likes: response.data.likes || []
+                };
+                
+                onNewPost(completePost);
+            }
+
             setUrl("")
             setDescription("")
             setbuttonPublicar("Publicar")
@@ -38,13 +53,13 @@ export default function newPost(activeNewPost){
                 confirmButtonColor: "#1877f2",
             });
             setbuttonPublicar("Publicar")
-            console.log(e)
+            // console.log(e)
         }
     }
 
     return(
         <NewPost onSubmit={createPost} $active = {activeNewPost}>
-            <Img></Img>
+            <Img src={token.image || null}></Img>
             <NewPostForm>
                 O que você tem pra compartilhar hoje?
                 <Enter 
@@ -91,11 +106,10 @@ const NewPost = styled.form`
     }
 `
 
-const Img = styled.div`
+const Img = styled.img`
     border-radius: 100%;
     width:50px;
     height: 50px;
-    background-color: #f10909;
 
     @media (max-width: 680px) {
         display: none;
