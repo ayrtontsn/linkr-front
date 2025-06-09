@@ -12,6 +12,7 @@ export default function FeedPage(){
     const {token, setToken } = useContext(TokenContext);
     const [activeMenu, setActiveMenu] = useState(false)
     const [activeNewPost, setActiveNewPost] = useState(false)
+    const [allPosts, setAllPosts] = useState(null);
     const menuRef = useRef(null);
 
     const handleLogout = () => {
@@ -27,6 +28,10 @@ export default function FeedPage(){
 
     const handleMenuItemClick = () => {
         setActiveMenu(false);
+    };
+
+    const handleNewPost = (newPost) => {
+        setAllPosts(currentPosts => [newPost, ...(currentPosts || [])]);
     };
 
     useEffect(() => {
@@ -72,8 +77,8 @@ export default function FeedPage(){
             <Title><h2>Feed</h2></Title>
             <Feed>
                 <Post>
-                    {newPost(activeNewPost)}
-                    {postFeed()}
+                    {newPost(activeNewPost, handleNewPost)}
+                    {postFeed(allPosts, setAllPosts)}
                 </Post>
                 <Suggestions>
                     {suggestionsUsers()}

@@ -5,7 +5,7 @@ import { BACKEND } from "./mock";
 import TokenContext from "../contexts/TokenContext";
 import Swal from "sweetalert2";
 
-export default function newPost(activeNewPost){
+export default function newPost(activeNewPost, onNewPost){
     const [url, setUrl] = useState("")
     const [description, setDescription] = useState("")
     const [buttonPublicar, setbuttonPublicar] = useState("Publicar")
@@ -18,13 +18,19 @@ export default function newPost(activeNewPost){
     }
 
     async function createPost(e) {
+        e.preventDefault();
         setbuttonPublicar("Carregando...")
 
         try {
-            await axios.post(`${BACKEND}/newpost`,{
+             const response = await axios.post(`${BACKEND}/newpost`,{
                 url,
                 description
             }, auth)
+
+            if (onNewPost && response.data) {
+                onNewPost(response.data);
+            }
+
             setUrl("")
             setDescription("")
             setbuttonPublicar("Publicar")
