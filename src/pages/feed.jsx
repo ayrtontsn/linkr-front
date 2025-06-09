@@ -5,6 +5,7 @@ import posts from "../components/posts";
 import { useNavigate } from "react-router-dom";
 import TokenContext from "../contexts/TokenContext";
 import suggestionsUsers from "../components/suggestions";
+import postFeed from "../components/posts";
 
 export default function FeedPage(){
     const navigate = useNavigate();
@@ -72,7 +73,7 @@ export default function FeedPage(){
             <Feed>
                 <Post>
                     {newPost(activeNewPost)}
-                    {posts()}
+                    {postFeed()}
                 </Post>
                 <Suggestions>
                     {suggestionsUsers()}
@@ -86,7 +87,9 @@ export default function FeedPage(){
 const Feed = styled.div`
     display: flex;
     justify-content: space-between;
-    width: 80%;  
+    width: 100%;
+    height: 100%;
+    
 `
 
 const Post = styled.div`
@@ -94,6 +97,7 @@ const Post = styled.div`
     justify-items: center;
     overflow-y: scroll;
     height: calc(98% - 125px);
+    width: 100%;
 `
 
 const Suggestions = styled.div`
@@ -112,7 +116,7 @@ const Back = styled.div`
     justify-items: center;
     background-color: #333333;
     width: 100vw;
-    height: 100vh;
+    height: 100%;
     left: 0;
 `
 const Header = styled.div`
@@ -137,7 +141,7 @@ const Header = styled.div`
 
     }
 
-    @media (max-width: 680px) {
+    @media (max-width: 768px) {
         position: fixed;
         bottom: 0;
         left: 0;
@@ -151,7 +155,7 @@ const NewPost = styled.div`
     font-size: 50px;
     color: #FFFFFF;
 
-    @media (min-width: 681px) {
+    @media (min-width: 769px) {
         display: none;
     }
 `
@@ -180,7 +184,7 @@ const Img = styled.div`
     height: 53px;
     background-color: #f10909;
 
-    @media (max-width: 680px) {
+    @media (max-width: 768px) {
         display: none;
     }
 `
@@ -205,11 +209,11 @@ const AbaMenu = styled.div`
     position: fixed;
     right: 5px;
 
-    @media (max-width: 680px) {
+    @media (max-width: 768px) {
         bottom: 80px;
     }
     
-    @media (min-width: 681px) {
+    @media (min-width: 769px) {
         top: 80px;
     }
 
