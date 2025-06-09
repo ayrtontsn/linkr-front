@@ -6,7 +6,10 @@ import { useState } from "react";
 import TokenContext from "./contexts/TokenContext";
 
 export default function Linkr() {
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState(() => {
+    const stored = localStorage.getItem("token");
+    return stored ? JSON.parse(stored) : null;
+  });
 
   return (
     <TokenContext.Provider value={{ token, setToken }}>
