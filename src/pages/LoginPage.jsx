@@ -93,7 +93,7 @@ export default function LoginPage() {
         console.log(res.data.image);
         setLoading(false);
         setToken(res.data);
-        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("token", JSON.stringify(res.data)); // Salva o objeto completo
         navigate("/feed");
       })
       .catch((err) => {
