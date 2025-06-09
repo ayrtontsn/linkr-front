@@ -4,11 +4,12 @@ import axios from "axios"
 import { useContext, useEffect, useState } from "react"
 import { Oval } from "react-loader-spinner"
 import TokenContext from "../contexts/TokenContext"
+import Swal from "sweetalert2"
 
 export default function postFeed(){
     const {token, setToken} = useContext(TokenContext)
     const [allPosts, setAllPosts] = useState("")
-
+    console.log(token)
     const auth = {
         headers: {
             Authorization: `Bearer ${token}`
@@ -16,6 +17,7 @@ export default function postFeed(){
     }
 
     useEffect(() =>{
+            console.log(auth)
             const requisition = axios.get(`${BACKEND}/allposts`, auth)
                                     .then(response => {setAllPosts(response.data)})
                                     .catch(e => {
@@ -27,7 +29,6 @@ export default function postFeed(){
                                             confirmButtonColor: "#1877f2",
                                         })
                                     })
-            
         }, [])
 
     if(!allPosts){
@@ -91,7 +92,6 @@ export default function postFeed(){
 
 
 const Post = styled.div`
-    display:flex;
     width: 90%;
     max-width: 660px;
     border-radius: 10px;
@@ -99,9 +99,14 @@ const Post = styled.div`
     flex-wrap: wrap;
     justify-content: center;
     padding:10px;
-    margin: 10px ;
+    margin: 20px ;
     font-weight: 300;
     font-size: 20px;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        border-radius: 0;
+    }
 `
 
 const User = styled.div`
@@ -120,20 +125,24 @@ const Img = styled.img`
 `
 
 const MetaData = styled.a`
-    display: flex;
+    display: inline-flex;
     border: 1px solid #4C4C4C;
     border-radius: 10px;
-
+    width: 100%;
+    max-width: 549px;
+    justify-content: space-between;
     text-decoration: none;
-
 `
 
 const Content = styled.div`
     display: flex;
     flex-direction: row;
+    box-sizing: content-box;
     align-items: end;
+    width: 100%;
+    height: 100%;
 
-    @media (max-width: 680px) {
+    @media (max-width: 768px) {
         flex-direction: column-reverse;
         align-items: start;
     }
@@ -142,7 +151,10 @@ const Content = styled.div`
 const Title = styled.div`
 
     display: block;
+    flex-wrap: wrap;
+    align-content: space-around;
     margin: 12px;
+    width: calc( 100% - 158px);
 
 
     h1{
@@ -150,6 +162,7 @@ const Title = styled.div`
         font-size: 16px;
         color: #B7B7B7;
         margin: 0 -12px ;
+        width: calc( 100% + 158px);
         
     }
 
@@ -157,7 +170,12 @@ const Title = styled.div`
         font-weight: 400;
         font-size: 16px;
         color: #CECECE;
-        padding-bottom: 10px;
+        padding-bottom: 5px;
+
+        @media (max-width: 768px) {
+            font-size: 12px;
+        }
+
     }
 
     h3{
@@ -165,16 +183,30 @@ const Title = styled.div`
         font-size: 11px;
         color: #9B9595;
         height: 60px;
-        margin-bottom: 12px;
+        margin-bottom: 5px;
+        box-sizing: border-box;
+        overflow: hidden;
 
-        overflow-y: hidden;
+        @media (max-width: 768px) {
+            max-height: 24px;
+            width: calc( 100%);
+        }
     }
 
-    p{
+    p{  
+        display: flex;
+        width: 100%;
+        height: 12px;
         font-weight: 300;
         font-size: 11px;
         font-style: italic;
         color: #9B9595;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    @media (max-width: 768px) {
+        max-height: 100px;
     }
 `
 
@@ -182,10 +214,16 @@ const ImgMetaData = styled.img`
     border-radius: 10px;
     width:153px;
     height: 153px;
+
+    @media (max-width: 768px) {
+        width:100px;
+        height: 100px;
+    }
 `
 
 const Box = styled.div`
     display: block;
+    width: 100%;
 `
 
 const Loading = styled.div`
@@ -208,17 +246,19 @@ const NoItens = styled.div`
 const Likes = styled.div`
     flex-direction: column;
     ion-icon{
-        font-size: 18px;
+        font-size: 36px;
         color: #FFFFFF;
         padding: 0 16px;     
     }
 
     p{
         color: #FFFFFF;
-        size: 12px;
+        size: 11px;
+        font-family: "Lato", sans-serif;
+        font-weight: 400;
     }
 
-    @media (max-width: 680px) {
+    @media (max-width: 768px) {
         display: flex;
         flex-direction: row;
         align-items: start;
