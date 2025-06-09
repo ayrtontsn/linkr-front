@@ -10,7 +10,6 @@ import DeletePostModal from "./DeletePostModal";
 
 export default function postFeed(allPosts, setAllPosts){
     const {token} = useContext(TokenContext)
-    // const [allPosts, setAllPosts] = useState("")
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPostData, setEditingPostData] = useState(null);
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
@@ -23,7 +22,6 @@ export default function postFeed(allPosts, setAllPosts){
     }
 
     useEffect(() =>{
-            // console.log(auth)
             if (!allPosts) {
             const requisition = axios.get(`${BACKEND}/allposts`, auth)
                                     .then(response => {setAllPosts(response.data)})

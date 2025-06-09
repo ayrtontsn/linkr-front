@@ -28,13 +28,13 @@ export default function newPost(activeNewPost, onNewPost){
             }, auth)
 
             if (onNewPost && response.data) {
-                // Completar os dados do post com as informações do usuário logado
+                // Complete the post data with user information
                 const completePost = {
                     ...response.data,
                     userImage: token.image,
                     userName: token.username,
                     userId: token.id,
-                    likes: response.data.likes || [] // Garantir que likes existe
+                    likes: response.data.likes || []
                 };
                 
                 onNewPost(completePost);
