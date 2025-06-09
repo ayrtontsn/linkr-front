@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import newPost from "../components/newPost";
 import { useContext, useEffect, useState, useRef } from "react";
-import posts from "../components/posts";
 import { useNavigate } from "react-router-dom";
 import TokenContext from "../contexts/TokenContext";
 import suggestionsUsers from "../components/suggestions";
@@ -51,7 +50,7 @@ export default function FeedPage(){
     }, [activeMenu]);
 
     useEffect(() => {
-        if(!token){
+        if(!token.token){
             navigate("/")
         }
     },[])
@@ -65,7 +64,7 @@ export default function FeedPage(){
                 </NewPost>
                 <MenuContainer ref={menuRef}>
                     <Menu onClick={handleMenuToggle}>
-                        <Img></Img>
+                        <Img src={token.image || null}></Img>
                         <ion-icon name="menu"></ion-icon>
                     </Menu>
                     <AbaMenu $active = {activeMenu}>
@@ -183,11 +182,10 @@ const Menu = styled.div`
     cursor: pointer;
 `
 
-const Img = styled.div`
+const Img = styled.img`
     border-radius: 10px;
     width:53px;
     height: 53px;
-    background-color: #f10909;
 
     @media (max-width: 768px) {
         display: none;

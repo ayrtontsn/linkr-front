@@ -9,11 +9,11 @@ export default function newPost(activeNewPost, onNewPost){
     const [url, setUrl] = useState("")
     const [description, setDescription] = useState("")
     const [buttonPublicar, setbuttonPublicar] = useState("Publicar")
-    const {token, setToken} = useContext(TokenContext)
+    const {token} = useContext(TokenContext)
 
     const auth = {
         headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token.token}`
         }
     }
 
@@ -28,7 +28,15 @@ export default function newPost(activeNewPost, onNewPost){
             }, auth)
 
             if (onNewPost && response.data) {
-                onNewPost(response.data);
+                // Completar os dados do post com as informações do usuário logado
+                const completePost = {
+                    ...response.data,
+                    userImage: token.image,
+                    userName: token.username,
+                    likes: response.data.likes || [] // Garantir que likes existe
+                };
+                
+                onNewPost(completePost);
             }
 
             setUrl("")
@@ -44,13 +52,13 @@ export default function newPost(activeNewPost, onNewPost){
                 confirmButtonColor: "#1877f2",
             });
             setbuttonPublicar("Publicar")
-            console.log(e)
+            // console.log(e)
         }
     }
 
     return(
         <NewPost onSubmit={createPost} $active = {activeNewPost}>
-            <Img></Img>
+            <Img src={token.image || null}></Img>
             <NewPostForm>
                 O que você tem pra compartilhar hoje?
                 <Enter 
@@ -97,11 +105,10 @@ const NewPost = styled.form`
     }
 `
 
-const Img = styled.div`
+const Img = styled.img`
     border-radius: 100%;
     width:50px;
     height: 50px;
-    background-color: #f10909;
 
     @media (max-width: 680px) {
         display: none;

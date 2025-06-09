@@ -18,12 +18,12 @@ export default function postFeed(allPosts, setAllPosts){
 
     const auth = {
         headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token.token}`
         }
     }
 
     useEffect(() =>{
-            console.log(auth)
+            // console.log(auth)
             if (!allPosts) {
             const requisition = axios.get(`${BACKEND}/allposts`, auth)
                                     .then(response => {setAllPosts(response.data)})

@@ -10,7 +10,7 @@ export default function suggestionsUsers(){
     const [suggestions, setSuggestions] = useState([])
     const auth = {
         headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token.token}`
         }
     }
 
@@ -18,12 +18,12 @@ export default function suggestionsUsers(){
         const suggestionsReq = async () => {
             try {
                 const response = await axios.get(`${BACKEND}/suggestions`,auth)
-                console.log("Sugestões recebidas:")
-                console.log(response)
-                console.log(response.data)
+                // console.log("Sugestões recebidas:")
+                // console.log(response)
+                // console.log(response.data)
                 setSuggestions(Array.isArray(response.data) ? response.data : [])
             } catch (e){
-                console.log(e)
+                // console.log(e)
                 setSuggestions([])
             }
         }

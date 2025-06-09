@@ -61,7 +61,7 @@ export default function EditPostModal({ isOpen, onClose, postData, onSave }) {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token.token}`,
       },
     };
 
