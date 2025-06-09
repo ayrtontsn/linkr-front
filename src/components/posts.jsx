@@ -5,11 +5,17 @@ import { useContext, useEffect, useState } from "react"
 import { Oval } from "react-loader-spinner"
 import TokenContext from "../contexts/TokenContext"
 import Swal from "sweetalert2"
+import EditPostModal from "./EditPostModal";
+import DeletePostModal from "./DeletePostModal";
 
 export default function postFeed(){
-    const {token, setToken} = useContext(TokenContext)
+    const {token} = useContext(TokenContext)
     const [allPosts, setAllPosts] = useState("")
-    console.log(token)
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingPostData, setEditingPostData] = useState(null);
+    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+    const [deletingPostId, setDeletingPostId] = useState(null);
+
     const auth = {
         headers: {
             Authorization: `Bearer ${token}`
@@ -32,7 +38,6 @@ export default function postFeed(){
         }, [])
 
     if(!allPosts){
-        console.log("teste")
         return(
             <Loading>
                 {(<Oval
@@ -54,6 +59,35 @@ export default function postFeed(){
                                 .then(response => {setAllPosts(response.data)})
     }
     
+    const handleEditClick = (post) => {
+        setEditingPostData(post);
+        setIsModalOpen(true);
+    };
+
+    const handleDeleteClick = (postId) => {
+        setDeletingPostId(postId);
+        setIsModalDeleteOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setIsModalDeleteOpen(false);
+        setEditingPostData(null);
+        setDeletingPostId(null);
+    };
+
+    const handleSavePost = (updatedPostData) => {
+        setAllPosts(currentPosts =>
+            currentPosts.map(post =>
+                post.id === updatedPostData.id ? { ...post, description: updatedPostData.description, url: updatedPostData.url } : post
+            )
+        );
+    };
+
+    const handleDeletePost = (postId) => {
+        setAllPosts(currentPosts => currentPosts.filter(post => post.id !== postId));
+    };
+
     return (
         <>
             <NoItens $noitens={allPosts.length}>
@@ -64,6 +98,8 @@ export default function postFeed(){
                 <User>
                     <Img src={post.userImage ||null}></Img>
                     {post.userName}
+                    <ion-icon name="create" onClick={() => handleEditClick(post)}></ion-icon>
+                    <ion-icon name="trash" onClick={() => handleDeleteClick(post.id)}></ion-icon>
                 </User>
                 <Content>
                     <Likes>
@@ -86,6 +122,18 @@ export default function postFeed(){
         )
 
         }
+        <EditPostModal
+                        isOpen={isModalOpen}
+                        onClose={handleCloseModal}
+                        postData={editingPostData}
+                        onSave={handleSavePost}
+                    />
+        <DeletePostModal
+                        isOpen={isModalDeleteOpen}
+                        onClose={handleCloseModal}
+                        postId={deletingPostId}
+                        onDelete={handleDeletePost}
+                        />
         </>
     )
 }
@@ -112,6 +160,7 @@ const Post = styled.div`
 const User = styled.div`
     display: flex;
     width: 100%;
+    justify-content: space-between;
     align-items: center;
     color: #FFFFFF;
 `

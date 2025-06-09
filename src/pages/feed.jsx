@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import newPost from "../components/newPost";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import posts from "../components/posts";
 import { useNavigate } from "react-router-dom";
 import TokenContext from "../contexts/TokenContext";
@@ -12,6 +12,7 @@ export default function FeedPage(){
     const {token, setToken } = useContext(TokenContext);
     const [activeMenu, setActiveMenu] = useState(false)
     const [activeNewPost, setActiveNewPost] = useState(false)
+    const menuRef = useRef(null);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -29,6 +30,22 @@ export default function FeedPage(){
     };
 
     useEffect(() => {
+        function handleClickOutside(event) {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setActiveMenu(false);
+            }
+        }
+
+        if (activeMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [activeMenu]);
+
+    useEffect(() => {
         if(!token){
             navigate("/")
         }
@@ -41,15 +58,16 @@ export default function FeedPage(){
                 <NewPost onClick={() => setActiveNewPost(!activeNewPost)}>
                     <ion-icon name="create"></ion-icon>
                 </NewPost>
-                <Menu onClick={handleMenuToggle}>
-                    <Img></Img>
-                    <ion-icon name="menu"></ion-icon>
-                </Menu>
-                <AbaMenu $active = {activeMenu}>
-                    <BotaoMenu onClick={handleMenuItemClick}>Meu Perfil</BotaoMenu>
-                    <BotaoMenu onClick={handleLogout}>Sair</BotaoMenu>
-                </AbaMenu>
-
+                <MenuContainer ref={menuRef}>
+                    <Menu onClick={handleMenuToggle}>
+                        <Img></Img>
+                        <ion-icon name="menu"></ion-icon>
+                    </Menu>
+                    <AbaMenu $active = {activeMenu}>
+                        <BotaoMenu onClick={handleMenuItemClick}>Meu Perfil</BotaoMenu>
+                        <BotaoMenu onClick={handleLogout}>Sair</BotaoMenu>
+                    </AbaMenu>
+                </MenuContainer>
             </Header>
             <Title><h2>Feed</h2></Title>
             <Feed>
@@ -142,6 +160,10 @@ const NewPost = styled.div`
     }
 `
 
+const MenuContainer = styled.div`
+    position: relative;
+`
+
 const Menu = styled.div`
     display: flex;
     align-items:center;
@@ -153,6 +175,7 @@ const Menu = styled.div`
     background-color: #333333;
     border-radius: 10px;
     padding: 3px;
+    cursor: pointer;
 `
 
 const Img = styled.div`

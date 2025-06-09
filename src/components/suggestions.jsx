@@ -18,9 +18,13 @@ export default function suggestionsUsers(){
         const suggestionsReq = async () => {
             try {
                 const response = await axios.get(`${BACKEND}/suggestions`,auth)
-                setSuggestions(response.data)
+                console.log("Sugestões recebidas:")
+                console.log(response)
+                console.log(response.data)
+                setSuggestions(Array.isArray(response.data) ? response.data : [])
             } catch (e){
                 console.log(e)
+                setSuggestions([])
             }
         }
         suggestionsReq()
