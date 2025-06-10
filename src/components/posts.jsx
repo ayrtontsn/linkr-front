@@ -54,12 +54,24 @@ export default function postFeed(allPosts, setAllPosts){
         )
     }
 
-    async function like(postId) {
-        console.log(auth)
-        console.log(postId)
-        const requisition = axios.put(`${BACKEND}/likepost`, postId,auth)
-                                .then(response => {setAllPosts(response.data)})
-    }
+    const handleLike = async (postId) => {
+
+        await axios.put(`${BACKEND}/likepost`, {postId},auth)
+        
+        const updatedLikePosts  = allPosts.map(post => {
+            if (post.id === postId) {
+            const userAlreadyLiked = post.likes.some((like) => like.id === token.id);
+                return {
+                ...post,
+                likes: userAlreadyLiked
+                    ? post.likes.filter(user => user.id !== token.id) 
+                    : [...post.likes, { nome: token.username, id: token.id }]                
+                };
+            }
+            return post;
+        });
+        setAllPosts(updatedLikePosts);
+    };
     
     const handleEditClick = (post) => {
         setEditingPostData(post);
@@ -111,8 +123,8 @@ export default function postFeed(allPosts, setAllPosts){
                     )}
                 </User>
                 <Content>
-                    <Likes>
-                        <ion-icon name="heart" onClick={() => like(post.id)}></ion-icon>
+                    <Likes $likeCollor = {post.likes.some((like) => like.id === token.id)}>
+                        <ion-icon name="heart" onClick={() => handleLike(post.id)}></ion-icon>
                         <p>{post.likes.length} likes</p>
                     </Likes>
                     <Box>
@@ -312,10 +324,12 @@ const NoItens = styled.div`
 const Likes = styled.div`
     flex-direction: column;
     width: 10%;
+    color: ${props => (props.$likeCollor ? "#FF0000" : "#FFFFFF")};
     ion-icon{
         font-size: 36px;
-        color: #FFFFFF;
-        padding: 0 16px;     
+        padding: 0 16px;
+        
+         
     }
 
     p{
