@@ -7,6 +7,7 @@ import TokenContext from "../contexts/TokenContext"
 import Swal from "sweetalert2"
 import EditPostModal from "./EditPostModal";
 import DeletePostModal from "./DeletePostModal";
+import { Tooltip } from 'react-tooltip'
 
 export default function postFeed(allPosts, setAllPosts){
     const {token} = useContext(TokenContext)
@@ -54,10 +55,24 @@ export default function postFeed(allPosts, setAllPosts){
         )
     }
 
-    async function like(postId) {
-        const requisition = axios.put(`${BACKEND}/likepost`, {postId},auth)
-                                .then(response => {setAllPosts(response.data)})
-    }
+    const handleLike = async (postId) => {
+
+        await axios.put(`${BACKEND}/likepost`, {postId},auth)
+        
+        const updatedLikePosts  = allPosts.map(post => {
+            if (post.id === postId) {
+            const userAlreadyLiked = post.likes.some((like) => like.id === token.id);
+                return {
+                ...post,
+                likes: userAlreadyLiked
+                    ? post.likes.filter(user => user.id !== token.id) 
+                    : [...post.likes, { nome: token.username, id: token.id }]                
+                };
+            }
+            return post;
+        });
+        setAllPosts(updatedLikePosts);
+    };
     
     const handleEditClick = (post) => {
         setEditingPostData(post);
@@ -88,6 +103,29 @@ export default function postFeed(allPosts, setAllPosts){
         setAllPosts(currentPosts => currentPosts.filter(post => post.id !== postId));
     };
 
+    function getLikeMessage(likes) {
+        const totalLikes = likes.length;
+
+        if (totalLikes === 0) return "";
+
+        const userLiked = likes.some((like) => like.id === token.id);
+        const otherLikes = likes.filter((like) => like.id !== token.id);
+
+        if (totalLikes === 1 && userLiked) {
+            return "Você curtiu";
+        }
+
+        if (userLiked) {
+            return `Você${otherLikes.length === 1 ? "e"+otherLikes[0].name  :", "+otherLikes[0].name+" outras "+(otherLikes.length-1)} pessoas curtiram`;
+        }
+
+        if (totalLikes === 1) {
+            return `${likes[0].name} curtiu`;
+        }
+
+        return `${likes[0].name} e ${totalLikes - 1} ${totalLikes - 1 === 1 ? "outra pessoa" : "outras pessoas"} curtiram`;
+        };
+
     return (
         <>
             <NoItens $noitens={allPosts.length}>
@@ -96,19 +134,29 @@ export default function postFeed(allPosts, setAllPosts){
         {allPosts.map(post => 
             <Post key={post.id}>
                 <User>
-                    <Img src={post.userImage ||null}></Img>
-                    {post.userName}
+                    <UserInfo>
+                        <Img src={post.userImage ||null}></Img>
+                        {post.userName}
+                    </UserInfo>
+
                     {token.id === post.userId && (
-                        <>
-                            <ion-icon name="create" onClick={() => handleEditClick(post)}></ion-icon>
-                            <ion-icon name="trash" onClick={() => handleDeleteClick(post.id)}></ion-icon>
-                        </>
+                    <UserInfo>
+                        <ion-icon name="create" onClick={() => handleEditClick(post)}></ion-icon>
+                        <ion-icon name="trash" onClick={() => handleDeleteClick(post.id)}></ion-icon>
+                    </UserInfo>
                     )}
                 </User>
                 <Content>
-                    <Likes>
-                        <ion-icon name="heart" onClick={like}></ion-icon>
+                    <Likes 
+                    $likeCollor = {post.likes.some((like) => like.id === token.id)}
+                    data-tooltip-content = {getLikeMessage(post.likes)}
+                    data-tooltip-id = "tooltip-likes"
+                    style = {{ cursor: 'pointer' }}
+                    >
+                        <ion-icon name="heart" onClick={() => handleLike(post.id)}></ion-icon>
                         <p>{post.likes.length} likes</p>
+                        <h4> · {getLikeMessage(post.likes)}</h4>
+                        <Tooltip id="tooltip-likes" className="custom-tooltip"/>
                     </Likes>
                     <Box>
                         <Title><h1>{post.description}</h1></Title>
@@ -169,6 +217,11 @@ const User = styled.div`
     color: #FFFFFF;
 `
 
+const UserInfo = styled.div`
+    align-items: center;
+    display: flex;
+`
+
 const Img = styled.img`
     border-radius: 100%;
     width:50px;
@@ -182,7 +235,6 @@ const MetaData = styled.a`
     border: 1px solid #4C4C4C;
     border-radius: 10px;
     width: 100%;
-    max-width: 549px;
     justify-content: space-between;
     text-decoration: none;
 `
@@ -206,8 +258,8 @@ const Title = styled.div`
     display: block;
     flex-wrap: wrap;
     align-content: space-around;
-    margin: 12px;
-    width: calc( 100% - 158px);
+    margin: 12px 0 12px 12px;
+    width: calc( 100% - 168px);
 
 
     h1{
@@ -242,7 +294,7 @@ const Title = styled.div`
 
         @media (max-width: 768px) {
             max-height: 24px;
-            width: calc( 100%);
+            width: calc( 100% - 100px);
         }
     }
 
@@ -277,6 +329,10 @@ const ImgMetaData = styled.img`
 const Box = styled.div`
     display: block;
     width: 100%;
+
+    @media (min-width: 769px) {
+        width: 90%;
+    }
 `
 
 const Loading = styled.div`
@@ -298,22 +354,42 @@ const NoItens = styled.div`
 
 const Likes = styled.div`
     flex-direction: column;
+    justify-items: center;
+    align-content: end;
+    margin: 0;
+    width: 10%;
+    color: ${props => (props.$likeCollor ? "#FF0000" : "#FFFFFF")};
     ion-icon{
-        font-size: 36px;
-        color: #FFFFFF;
-        padding: 0 16px;     
+        font-size: 18px;
     }
 
     p{
         color: #FFFFFF;
-        size: 11px;
+        font-size: 11px;
         font-family: "Lato", sans-serif;
         font-weight: 400;
+    }
+
+    h4{
+        color: #FFFFFF;
+        font-size: 11px;
+        font-family: "Lato", sans-serif;
+        font-weight: 400;
+        @media (min-width: 768px) {
+            display: none;
+        }
+    }
+    .custom-tooltip {
+        @media (max-width: 768px) {
+            display: none;   
+        }
     }
 
     @media (max-width: 768px) {
         display: flex;
         flex-direction: row;
-        align-items: start;
+        align-items: center;
+        width: 100%;
+        margin: 10px 0;
     }
 `

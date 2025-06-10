@@ -124,7 +124,6 @@ const NewPostForm = styled.div`
 
     @media (max-width: 680px){
         width: 100vw;
-        
     }
 `
 
