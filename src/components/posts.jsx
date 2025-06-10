@@ -7,6 +7,7 @@ import TokenContext from "../contexts/TokenContext"
 import Swal from "sweetalert2"
 import EditPostModal from "./EditPostModal";
 import DeletePostModal from "./DeletePostModal";
+import { Tooltip } from 'react-tooltip'
 
 export default function postFeed(allPosts, setAllPosts){
     const {token} = useContext(TokenContext)
@@ -102,6 +103,29 @@ export default function postFeed(allPosts, setAllPosts){
         setAllPosts(currentPosts => currentPosts.filter(post => post.id !== postId));
     };
 
+    function getLikeMessage(likes) {
+        const totalLikes = likes.length;
+
+        if (totalLikes === 0) return "";
+
+        const userLiked = likes.some((like) => like.id === token.id);
+        const otherLikes = likes.filter((like) => like.id !== token.id);
+
+        if (totalLikes === 1 && userLiked) {
+            return "Você curtiu";
+        }
+
+        if (userLiked) {
+            return `Você${otherLikes.length === 1 ? "e"+otherLikes[0].name  :", "+otherLikes[0].name+" outras "+(otherLikes.length-1)} pessoas curtiram`;
+        }
+
+        if (totalLikes === 1) {
+            return `${likes[0].name} curtiu`;
+        }
+
+        return `${likes[0].name} e ${totalLikes - 1} ${totalLikes - 1 === 1 ? "outra pessoa" : "outras pessoas"} curtiram`;
+        };
+
     return (
         <>
             <NoItens $noitens={allPosts.length}>
@@ -123,9 +147,16 @@ export default function postFeed(allPosts, setAllPosts){
                     )}
                 </User>
                 <Content>
-                    <Likes $likeCollor = {post.likes.some((like) => like.id === token.id)}>
+                    <Likes 
+                    $likeCollor = {post.likes.some((like) => like.id === token.id)}
+                    data-tooltip-content = {getLikeMessage(post.likes)}
+                    data-tooltip-id = "tooltip-likes"
+                    style = {{ cursor: 'pointer' }}
+                    >
                         <ion-icon name="heart" onClick={() => handleLike(post.id)}></ion-icon>
                         <p>{post.likes.length} likes</p>
+                        <h4> · {getLikeMessage(post.likes)}</h4>
+                        <Tooltip id="tooltip-likes" className="custom-tooltip"/>
                     </Likes>
                     <Box>
                         <Title><h1>{post.description}</h1></Title>
@@ -323,20 +354,35 @@ const NoItens = styled.div`
 
 const Likes = styled.div`
     flex-direction: column;
+    justify-items: center;
+    align-content: end;
+    margin: 0;
     width: 10%;
     color: ${props => (props.$likeCollor ? "#FF0000" : "#FFFFFF")};
     ion-icon{
-        font-size: 36px;
-        padding: 0 16px;
-        
-         
+        font-size: 18px;
     }
 
     p{
         color: #FFFFFF;
-        size: 11px;
+        font-size: 11px;
         font-family: "Lato", sans-serif;
         font-weight: 400;
+    }
+
+    h4{
+        color: #FFFFFF;
+        font-size: 11px;
+        font-family: "Lato", sans-serif;
+        font-weight: 400;
+        @media (min-width: 768px) {
+            display: none;
+        }
+    }
+    .custom-tooltip {
+        @media (max-width: 768px) {
+            display: none;   
+        }
     }
 
     @media (max-width: 768px) {
@@ -344,5 +390,6 @@ const Likes = styled.div`
         flex-direction: row;
         align-items: center;
         width: 100%;
+        margin: 10px 0;
     }
 `
