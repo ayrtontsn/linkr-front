@@ -55,7 +55,9 @@ export default function postFeed(allPosts, setAllPosts){
     }
 
     async function like(postId) {
-        const requisition = axios.put(`${BACKEND}/likepost`, {postId},auth)
+        console.log(auth)
+        console.log(postId)
+        const requisition = axios.put(`${BACKEND}/likepost`, postId,auth)
                                 .then(response => {setAllPosts(response.data)})
     }
     
@@ -96,18 +98,21 @@ export default function postFeed(allPosts, setAllPosts){
         {allPosts.map(post => 
             <Post key={post.id}>
                 <User>
-                    <Img src={post.userImage ||null}></Img>
-                    {post.userName}
+                    <UserInfo>
+                        <Img src={post.userImage ||null}></Img>
+                        {post.userName}
+                    </UserInfo>
+
                     {token.id === post.userId && (
-                        <>
-                            <ion-icon name="create" onClick={() => handleEditClick(post)}></ion-icon>
-                            <ion-icon name="trash" onClick={() => handleDeleteClick(post.id)}></ion-icon>
-                        </>
+                    <UserInfo>
+                        <ion-icon name="create" onClick={() => handleEditClick(post)}></ion-icon>
+                        <ion-icon name="trash" onClick={() => handleDeleteClick(post.id)}></ion-icon>
+                    </UserInfo>
                     )}
                 </User>
                 <Content>
                     <Likes>
-                        <ion-icon name="heart" onClick={like}></ion-icon>
+                        <ion-icon name="heart" onClick={() => like(post.id)}></ion-icon>
                         <p>{post.likes.length} likes</p>
                     </Likes>
                     <Box>
@@ -169,6 +174,11 @@ const User = styled.div`
     color: #FFFFFF;
 `
 
+const UserInfo = styled.div`
+    align-items: center;
+    display: flex;
+`
+
 const Img = styled.img`
     border-radius: 100%;
     width:50px;
@@ -182,7 +192,6 @@ const MetaData = styled.a`
     border: 1px solid #4C4C4C;
     border-radius: 10px;
     width: 100%;
-    max-width: 549px;
     justify-content: space-between;
     text-decoration: none;
 `
@@ -206,8 +215,8 @@ const Title = styled.div`
     display: block;
     flex-wrap: wrap;
     align-content: space-around;
-    margin: 12px;
-    width: calc( 100% - 158px);
+    margin: 12px 0 12px 12px;
+    width: calc( 100% - 168px);
 
 
     h1{
@@ -242,7 +251,7 @@ const Title = styled.div`
 
         @media (max-width: 768px) {
             max-height: 24px;
-            width: calc( 100%);
+            width: calc( 100% - 100px);
         }
     }
 
@@ -277,6 +286,10 @@ const ImgMetaData = styled.img`
 const Box = styled.div`
     display: block;
     width: 100%;
+
+    @media (min-width: 769px) {
+        width: 90%;
+    }
 `
 
 const Loading = styled.div`
@@ -298,6 +311,7 @@ const NoItens = styled.div`
 
 const Likes = styled.div`
     flex-direction: column;
+    width: 10%;
     ion-icon{
         font-size: 36px;
         color: #FFFFFF;
@@ -314,6 +328,7 @@ const Likes = styled.div`
     @media (max-width: 768px) {
         display: flex;
         flex-direction: row;
-        align-items: start;
+        align-items: center;
+        width: 100%;
     }
 `
