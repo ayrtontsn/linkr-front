@@ -95,10 +95,9 @@ export default function FeedPage(){
 }
 const Feed = styled.div`
     display: flex;
-    justify-content: space-between;
-    width: 100%;
+    justify-content: center;
+    width: 100vw;
     height: 100%;
-    
 `
 
 const Post = styled.div`
@@ -106,7 +105,6 @@ const Post = styled.div`
     justify-items: center;
     overflow-y: scroll;
     height: calc(98% - 125px);
-    width: 100%;
 `
 
 const Suggestions = styled.div`
