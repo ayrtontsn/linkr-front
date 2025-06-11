@@ -3,10 +3,10 @@ import newPost from "../components/newPost";
 import { useContext, useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import TokenContext from "../contexts/TokenContext";
-import suggestionsUsers from "../components/suggestions";
 import postFeed from "../components/posts";
+import EditProfile from "../components/EditProfile";
 
-export default function FeedPage(){
+export default function MyProfilePage(){
     const navigate = useNavigate();
     const {token, setToken } = useContext(TokenContext);
     const [activeMenu, setActiveMenu] = useState(false)
@@ -73,43 +73,43 @@ export default function FeedPage(){
                     </AbaMenu>
                 </MenuContainer>
             </Header>
-            <Title><h2>Feed</h2></Title>
+            <ProfileEdit>
+                {EditProfile()}
+            </ProfileEdit>
+            <Title><h2>Meus Posts</h2></Title>
             <Feed>
                 <Post>
-                    {newPost(activeNewPost, handleNewPost)}
+                    <NewPost>
+                        {newPost(activeNewPost, handleNewPost)}
+                    </NewPost>
                     {postFeed(allPosts, setAllPosts)}
                 </Post>
-                <Suggestions>
-                    {suggestionsUsers()}
-                </Suggestions>
             </Feed>
 
         </Back>
     )
 
 }
+
+const ProfileEdit = styled.div`
+    display: block;
+    width: 100%;
+    max-width: 1019px;
+    justify-items: end;
+    align-content: end;
+    padding: 70px 0 0 0;
+`
+
 const Feed = styled.div`
     display: flex;
     justify-content: center;
     width: 100vw;
-    height: 100%;
 `
 
 const Post = styled.div`
     display: block;
     justify-items: center;
-    overflow-y: scroll;
     height: calc(98% - 125px);
-`
-
-const Suggestions = styled.div`
-    display: block;
-    height: fit-content;
-    width: 328px;
-    background-color: #151515;
-    @media (max-width: 1024px) {
-        display: none;
-    }
 `
 
 const Back = styled.div`
@@ -120,6 +120,7 @@ const Back = styled.div`
     width: 100vw;
     height: 100%;
     left: 0;
+    overflow-y:  scroll;
 `
 const Header = styled.div`
     display: flex;

@@ -97,7 +97,7 @@ const NewPost = styled.form`
 
     z-index: 2;
 
-    @media (max-width: 680px) {
+    @media (max-width: 768px) {
         display: ${props => (props.$active ? "flex" : "none")};
         position: fixed;
         bottom: 80px;
@@ -111,7 +111,7 @@ const Img = styled.img`
     width:50px;
     height: 50px;
 
-    @media (max-width: 680px) {
+    @media (max-width: 768px) {
         display: none;
     }
 `
@@ -122,7 +122,7 @@ const NewPostForm = styled.div`
     padding: 10px 10px 0 10px;
     color: #707070;
 
-    @media (max-width: 680px){
+    @media (max-width: 768px){
         width: 100vw;
     }
 `

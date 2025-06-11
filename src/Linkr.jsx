@@ -4,6 +4,7 @@ import SignUpPage from "./pages/SignUpPage";
 import FeedPage from "./pages/feed";
 import { useState } from "react";
 import TokenContext from "./contexts/TokenContext";
+import MyProfilePage from "./pages/myProfile";
 
 export default function Linkr() {
   const [token, setToken] = useState(() => {
@@ -20,6 +21,7 @@ export default function Linkr() {
           <Route path="/" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
           <Route path="/feed" element={<FeedPage />} />
+          <Route path="/user/my-profile" element={<MyProfilePage />} />
         </Routes>
       </BrowserRouter>
     </TokenContext.Provider>
