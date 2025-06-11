@@ -115,7 +115,7 @@ export default function postFeed(allPosts, setAllPosts){
                     </Username>
                     {token.id === post.userId && (
                         <>
-                            <ion-icon name="create" onClick={() => handleEditClick(post)}></ion-icon>
+                            <span class="material-symbols-outlined" onClick={() => handleEditClick(post)}>edit</span>
                             <ion-icon name="trash" onClick={() => handleDeleteClick(post.id)}></ion-icon>
                         </>
                     )}

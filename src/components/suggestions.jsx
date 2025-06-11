@@ -61,6 +61,7 @@ const User = styled.div`
     margin: 10px;
     align-items: center;
     border-radius: 10px;
+    cursor: pointer;
 
     p{
         font-size: 19px;

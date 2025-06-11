@@ -6,6 +6,8 @@ import axios from "axios";
 import { BACKEND } from "../components/mock";
 import { Oval } from "react-loader-spinner";
 import FollowersModal from "../components/FollowersModal";
+import EditPostModal from "../components/EditPostModal";
+import DeletePostModal from "../components/DeletePostModal";
 
 export default function UserPage() {
   const navigate = useNavigate();
@@ -23,6 +25,10 @@ export default function UserPage() {
   const [showFollowingModal, setShowFollowingModal] = useState(false);
   const [followersData, setFollowersData] = useState([]);
   const [followingData, setFollowingData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingPostData, setEditingPostData] = useState(null);
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+  const [deletingPostId, setDeletingPostId] = useState(null);
   const menuRef = useRef(null);
 
   const auth = {
@@ -103,10 +109,44 @@ export default function UserPage() {
     }
   };
 
+  const handleEditClick = (post) => {
+    setEditingPostData(post);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (postId) => {
+    setDeletingPostId(postId);
+    setIsModalDeleteOpen(true);
+  };
+
+  const handleSavePost = (updatedPostData) => {
+    setUserPosts((currentPosts) =>
+      currentPosts.map((post) =>
+        post.id === updatedPostData.id
+          ? {
+              ...post,
+              description: updatedPostData.description,
+              url: updatedPostData.url,
+            }
+          : post
+      )
+    );
+  };
+
+  const handleDeletePost = (postId) => {
+    setUserPosts((currentPosts) =>
+      currentPosts.filter((post) => post.id !== postId)
+    );
+  };
+
   // Close modals
   const handleCloseModal = () => {
     setShowFollowersModal(false);
     setShowFollowingModal(false);
+    setIsModalOpen(false);
+    setIsModalDeleteOpen(false);
+    setEditingPostData(null);
+    setDeletingPostId(null);
   };
 
   // Click outside menu handler
@@ -210,7 +250,6 @@ export default function UserPage() {
     <Back>
       <Header>
         <h1>Linkr</h1>
-        {/* Mobile follow button */}
         {id !== token.id.toString() && (
           <FollowButtonMobile
             onClick={handleFollowToggle}
@@ -254,10 +293,7 @@ export default function UserPage() {
                   <Username>{userData?.username}</Username>
                   {token.id === post.userId && (
                     <UpdateDeleteIcons>
-                      <ion-icon
-                        name="create"
-                        onClick={() => handleEditClick(post)}
-                      ></ion-icon>
+                      <span class="material-symbols-outlined" onClick={() => handleEditClick(post)}>edit</span>
                       <ion-icon
                         name="trash"
                         onClick={() => handleDeleteClick(post.id)}
@@ -370,6 +406,22 @@ export default function UserPage() {
         title="Seguidos por "
         users={followingData}
         username={userData?.username || "Usuário"}
+      />
+
+      {/* Edit Post Modal */}
+      <EditPostModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        postData={editingPostData}
+        onSave={handleSavePost}
+      />
+
+      {/* Delete Post Modal */}
+      <DeletePostModal
+        isOpen={isModalDeleteOpen}
+        onClose={handleCloseModal}
+        postId={deletingPostId}
+        onDelete={handleDeletePost}
       />
     </Back>
   );
@@ -534,7 +586,7 @@ const ProfileContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 5px;
 
   @media (max-width: 768px) {
     max-width: 100%;
@@ -788,6 +840,15 @@ const UpdateDeleteIcons = styled.div`
     }
   }
 
+  span {
+    font-size: 25px;
+    color: #ffffff;
+    cursor: pointer;
+    @media (max-width: 768px) {
+      font-size: 20px;
+    }
+  }
+
   @media (max-width: 768px) {
     position: static;
   }
@@ -806,6 +867,8 @@ const UserImg = styled.img`
     position: static;
     border: none;
     margin-right: 15px;
+    width: 40px;
+    height: 40px;
   }
 `;
 
@@ -826,7 +889,7 @@ const Username = styled.span`
   border-radius: 15px;
   @media (max-width: 768px) {
     position: absolute;
-    bottom: 295px;
+    bottom: 290px;
     left: 85px;
     border-radius: 0;
     padding: 0;
