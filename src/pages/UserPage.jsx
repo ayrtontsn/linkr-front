@@ -178,7 +178,6 @@ export default function UserPage() {
           `${BACKEND}/follow/status/${id}`,
           auth
         );
-        console.log(followResponse.data);
         setIsFollowing(followResponse.data.isFollowing);
         setFollowsLoggedUser(followResponse.data.isFollower);
 
