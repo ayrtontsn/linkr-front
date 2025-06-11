@@ -7,6 +7,7 @@ import TokenContext from "../contexts/TokenContext"
 import Swal from "sweetalert2"
 import EditPostModal from "./EditPostModal";
 import DeletePostModal from "./DeletePostModal";
+import { useNavigate } from "react-router-dom";
 
 export default function postFeed(allPosts, setAllPosts){
     const {token} = useContext(TokenContext)
@@ -14,6 +15,7 @@ export default function postFeed(allPosts, setAllPosts){
     const [editingPostData, setEditingPostData] = useState(null);
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const [deletingPostId, setDeletingPostId] = useState(null);
+    const navigate = useNavigate();
 
     const auth = {
         headers: {
@@ -88,6 +90,10 @@ export default function postFeed(allPosts, setAllPosts){
         setAllPosts(currentPosts => currentPosts.filter(post => post.id !== postId));
     };
 
+    const navigateToUserProfile = (userId) => {
+        navigate(`/user/${userId}`);
+    };
+
     return (
         <>
             <NoItens $noitens={allPosts.length}>
@@ -96,8 +102,17 @@ export default function postFeed(allPosts, setAllPosts){
         {allPosts.map(post => 
             <Post key={post.id}>
                 <User>
-                    <Img src={post.userImage ||null}></Img>
-                    {post.userName}
+                    <Img 
+                        src={post.userImage ||null} 
+                        onClick={() => navigateToUserProfile(post.userId)}
+                        style={{ cursor: 'pointer' }}
+                    />
+                    <Username 
+                        onClick={() => navigateToUserProfile(post.userId)}
+                        data-test="username"
+                    >
+                        {post.userName}
+                    </Username>
                     {token.id === post.userId && (
                         <>
                             <ion-icon name="create" onClick={() => handleEditClick(post)}></ion-icon>
@@ -167,6 +182,17 @@ const User = styled.div`
     justify-content: space-between;
     align-items: center;
     color: #FFFFFF;
+`
+
+const Username = styled.span`
+    color: #FFFFFF;
+    font-family: "Lato", sans-serif;
+    font-size: 19px;
+    cursor: pointer;
+    
+    &:hover {
+        text-decoration: underline;
+    }
 `
 
 const Img = styled.img`

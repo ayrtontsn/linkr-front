@@ -29,6 +29,11 @@ export default function FeedPage(){
         setActiveMenu(false);
     };
 
+    const handleMyProfile = () => {
+        navigate(`/user/${token.id}`);
+        handleMenuItemClick();
+    };
+
     const handleNewPost = (newPost) => {
         setAllPosts(currentPosts => [newPost, ...(currentPosts || [])]);
     };
@@ -68,7 +73,7 @@ export default function FeedPage(){
                         <ion-icon name="menu"></ion-icon>
                     </Menu>
                     <AbaMenu $active = {activeMenu}>
-                        <BotaoMenu onClick={handleMenuItemClick}>Meu Perfil</BotaoMenu>
+                        <BotaoMenu onClick={handleMyProfile} data-test="my-profile">Meu Perfil</BotaoMenu>
                         <BotaoMenu onClick={handleLogout}>Sair</BotaoMenu>
                     </AbaMenu>
                 </MenuContainer>
