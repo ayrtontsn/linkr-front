@@ -8,10 +8,11 @@ import { Oval } from "react-loader-spinner";
 import FollowersModal from "../components/FollowersModal";
 import EditPostModal from "../components/EditPostModal";
 import DeletePostModal from "../components/DeletePostModal";
+import Swal from "sweetalert2"
 
 export default function UserPage() {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get user ID from URL
+  const { id } = useParams();
   const { token, setToken } = useContext(TokenContext);
   const [activeMenu, setActiveMenu] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -37,7 +38,6 @@ export default function UserPage() {
     },
   };
 
-  // Handle logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     setToken(null);
@@ -45,29 +45,24 @@ export default function UserPage() {
     navigate("/");
   };
 
-  // Toggle menu
   const handleMenuToggle = () => {
     setActiveMenu(!activeMenu);
   };
 
-  // Close menu when clicking menu item
   const handleMenuItemClick = () => {
     setActiveMenu(false);
   };
 
-  // Navigate to own profile
   const handleMyProfile = () => {
     navigate(`/user/${token.id}`);
     handleMenuItemClick();
   };
 
-  // Navigate to feed
   const handleFeed = () => {
     navigate("/feed");
     handleMenuItemClick();
   };
 
-  // Toggle follow/unfollow
   const handleFollowToggle = async () => {
     try {
       if (isFollowing) {
@@ -85,7 +80,6 @@ export default function UserPage() {
     }
   };
 
-  // Open followers modal
   const handleShowFollowers = async () => {
     try {
       const response = await axios.get(`${BACKEND}/followers/${id}`, auth);
@@ -97,7 +91,6 @@ export default function UserPage() {
     }
   };
 
-  // Open following modal
   const handleShowFollowing = async () => {
     try {
       const response = await axios.get(`${BACKEND}/following/${id}`, auth);
@@ -139,7 +132,6 @@ export default function UserPage() {
     );
   };
 
-  // Close modals
   const handleCloseModal = () => {
     setShowFollowersModal(false);
     setShowFollowingModal(false);
@@ -178,7 +170,6 @@ export default function UserPage() {
     const fetchUserData = async () => {
       setLoading(true);
       try {
-        // Get user profile data
         const userResponse = await axios.get(`${BACKEND}/user/${id}`, auth);
         setUserData(userResponse.data);
 
@@ -203,7 +194,13 @@ export default function UserPage() {
         setUserPosts(postsResponse.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        alert("Erro ao carregar dados do usuário. Tente novamente mais tarde.");
+        Swal.fire({
+          icon: "error",
+          title: "Erro no carregamento dos posts",
+          text: "Um erro aconteceu. Atualize a página ou tente novamente em alguns minutos.",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#1877f2",
+        });
       } finally {
         setLoading(false);
       }
@@ -293,7 +290,12 @@ export default function UserPage() {
                   <Username>{userData?.username}</Username>
                   {token.id === post.userId && (
                     <UpdateDeleteIcons>
-                      <span class="material-symbols-outlined" onClick={() => handleEditClick(post)}>edit</span>
+                      <span
+                        class="material-symbols-outlined"
+                        onClick={() => handleEditClick(post)}
+                      >
+                        edit
+                      </span>
                       <ion-icon
                         name="trash"
                         onClick={() => handleDeleteClick(post.id)}
@@ -390,7 +392,6 @@ export default function UserPage() {
         </ProfileContainer>
       </UserContainer>
 
-      {/* Followers Modal */}
       <FollowersModal
         isOpen={showFollowersModal}
         onClose={handleCloseModal}
@@ -399,7 +400,6 @@ export default function UserPage() {
         username={userData?.username || "Usuário"}
       />
 
-      {/* Following Modal */}
       <FollowersModal
         isOpen={showFollowingModal}
         onClose={handleCloseModal}
@@ -408,7 +408,6 @@ export default function UserPage() {
         username={userData?.username || "Usuário"}
       />
 
-      {/* Edit Post Modal */}
       <EditPostModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
@@ -416,7 +415,6 @@ export default function UserPage() {
         onSave={handleSavePost}
       />
 
-      {/* Delete Post Modal */}
       <DeletePostModal
         isOpen={isModalDeleteOpen}
         onClose={handleCloseModal}
