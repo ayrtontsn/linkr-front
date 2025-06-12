@@ -13,7 +13,6 @@ export default function FeedPage(){
     const [activeNewPost, setActiveNewPost] = useState(false)
     const [allPosts, setAllPosts] = useState(null);
     const menuRef = useRef(null);
-
     const handleLogout = () => {
         localStorage.removeItem("token");
         setToken(null);
@@ -69,11 +68,11 @@ export default function FeedPage(){
                 </NewPost>
                 <MenuContainer ref={menuRef}>
                     <Menu onClick={handleMenuToggle}>
-                        <Img src={userProfile.image || null}></Img>
+                        <Img src={userProfile.image || token.image}></Img>
                         <ion-icon name="menu"></ion-icon>
                     </Menu>
                     <AbaMenu $active = {activeMenu}>
-                        <BotaoMenu onClick={handleMyProfile} data-test="my-profile">Meu Perfil</BotaoMenu>
+                        <BotaoMenu onClick={handleMyProfile}>Meu Perfil</BotaoMenu>
                         <BotaoMenu onClick={handleLogout}>Sair</BotaoMenu>
                     </AbaMenu>
                 </MenuContainer>

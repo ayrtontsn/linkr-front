@@ -58,11 +58,6 @@ export default function UserPage() {
     handleMenuItemClick();
   };
 
-  const handleFeed = () => {
-    navigate("/feed");
-    handleMenuItemClick();
-  };
-
   const handleFollowToggle = async () => {
     try {
       if (isFollowing) {
@@ -222,7 +217,6 @@ export default function UserPage() {
               <ion-icon name="menu"></ion-icon>
             </Menu>
             <AbaMenu $active={activeMenu}>
-              <BotaoMenu onClick={handleFeed}>Feed</BotaoMenu>
               <BotaoMenu onClick={handleMyProfile}>Meu Perfil</BotaoMenu>
               <BotaoMenu onClick={handleLogout}>Sair</BotaoMenu>
             </AbaMenu>
@@ -245,7 +239,7 @@ export default function UserPage() {
   return (
     <Back>
       <Header>
-        <h1>Linkr</h1>
+        <h1 onClick={() => navigate("/feed")} style={{ cursor: "pointer" }}>Linkr</h1>
         {id !== token.id.toString() && (
           <FollowButtonMobile
             onClick={handleFollowToggle}
@@ -270,7 +264,6 @@ export default function UserPage() {
             <ion-icon name="menu"></ion-icon>
           </Menu>
           <AbaMenu $active={activeMenu}>
-            <BotaoMenu onClick={handleFeed}>Feed</BotaoMenu>
             <BotaoMenu onClick={handleMyProfile}>Meu Perfil</BotaoMenu>
             <BotaoMenu onClick={handleLogout}>Sair</BotaoMenu>
           </AbaMenu>

@@ -29,7 +29,6 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
             const route = BACKEND+routeGetPosts
             const requisition = axios.get(route, auth)
                                     .then(response => {setAllPosts(response.data)
-                                        console.log(response.data[0])
                                     })
                                     
                                     .catch(e => {
@@ -110,7 +109,11 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
     };
 
     const navigateToUserProfile = (userId) => {
-        navigate(`/user/${userId}`);
+        if (userId === token.id) {
+            navigate("/user/my-profile");
+        } else {
+            navigate(`/user/${userId}`);
+        }
     };
 
     function getLikeMessage(likes) {

@@ -79,7 +79,6 @@ export default function EditProfile(){
             setEditeSaveButtonIonIcon("reload")
             try{
                 const response = await axios.put(`${BACKEND}/myprofile`, {username: name, age, bio, image},auth)
-                console.log(response)
                 setProfile({
                                 name: response.data.username,
                                 image: response.data.image,

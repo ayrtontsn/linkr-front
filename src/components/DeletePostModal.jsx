@@ -83,7 +83,6 @@ export default function DeletePostModal({ isOpen, onClose, postId, onDelete }) {
           <CloseButton
             onClick={handleClose}
             disabled={isLoading}
-            data-test="cancel"
           >
             {" "}
             Cancelar
@@ -91,7 +90,6 @@ export default function DeletePostModal({ isOpen, onClose, postId, onDelete }) {
           <SaveButton
             onClick={handleDelete}
             disabled={isLoading}
-            data-test="save-btn"
           >
             {" "}
             {isLoading ? (
@@ -111,14 +109,12 @@ export default function DeletePostModal({ isOpen, onClose, postId, onDelete }) {
         <MobileCloseButton
           onClick={handleClose}
           disabled={isLoading}
-          data-test="cancel"
         >
           Cancelar
         </MobileCloseButton>
         <MobileSaveButton
           onClick={handleDelete}
           disabled={isLoading}
-          data-test="save-btn"
         >
           {isLoading ? (
             <Oval
