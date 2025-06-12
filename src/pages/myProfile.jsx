@@ -58,7 +58,7 @@ export default function MyProfilePage(){
     return(
         <Back>
             <Header>
-                <h1>Linkr</h1>
+                <h1 onClick={() => navigate("/feed")}>Linkr</h1>
                 <NewPost onClick={() => setActiveNewPost(!activeNewPost)}>
                     <ion-icon name="create"></ion-icon>
                 </NewPost>

@@ -1,20 +1,121 @@
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import styled from "styled-components"
 import TokenContext from "../contexts/TokenContext"
+import Swal from "sweetalert2"
+import { BACKEND } from "./mock"
+import axios from "axios"
+import { useRef } from "react"
 
 export default function EditProfile(){
 
     const {token} = useContext(TokenContext)
-    const [name, setName] = useState("")
-    const [age, setAge] = useState("")
-    const [image, setImage] = useState("")
-    const [about, setAbou] = useState("")
+
+    const [profile, setProfile] = useState({
+        name: "",
+        image: "",
+        bio: "",
+        age: "",
+    })
+
+    const [name, setName] = useState(profile.name)
+    const [age, setAge] = useState(profile.age)
+    const [image, setImage] = useState(profile.image)
+    const [bio, setBio] = useState(profile.bio)
+
+    const auth = {
+        headers: {
+            Authorization: `Bearer ${token.token}`
+        }
+    }
+
+    useEffect(() =>{
+            const requisition = axios.get(`${BACKEND}/myprofile`, auth)
+                                .then(response => {setProfile({
+                                    name: response.data.username,
+                                    image: response.data.image,
+                                    bio: response.data.bio,
+                                    age: response.data.age,
+                                })})
+                                .catch(e => {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Erro no carregamento do seu perfil",
+                                        text: "Um erro aconteceu. Atualize a página ou tente novamente em alguns minutos.",
+                                        confirmButtonText: "OK",
+                                        confirmButtonColor: "#989ba0",
+                                    })
+                                })
+                        
+    }, [])
+
+    useEffect(() => {
+        if (profile.name) {
+            setName(profile.name);
+            setAge(profile.age);
+            setImage(profile.image);
+            setBio(profile.bio);
+        }
+    }, [profile]);
+
+    const [editeSaveButton, setEditeSaveButton] = useState("Editar")
+    const [cancelButton, setCancelButton] = useState(false)
+    const nameRef = useRef(null)
+
+    function editFormProfile(){
+        if(!cancelButton){
+            setCancelButton(true)
+            setEditeSaveButton("Salvar")
+
+            setTimeout(() => {
+                nameRef.current?.focus();
+            }, 0);
+        } else {
+            axios.put(`${BACKEND}/myprofile`, {username: name, age, bio, image},auth)
+                                .then(response => {setProfile({
+                                    name: response.data.username,
+                                    image: response.data.image,
+                                    bio: response.data.bio,
+                                    age: response.data.age,
+                                })
+                                cancelEdit()
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Perfil atualizado com sucesso!",
+                                    text: "Suas informações foram salvas.",
+                                    confirmButtonText: "OK",
+                                    confirmButtonColor: "#1877f2",
+                                });
+                            })
+                                .catch(e => {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Erro no carregamento do seu perfil",
+                                        text: "Um erro aconteceu. Atualize a página ou tente novamente em alguns minutos.",
+                                        confirmButtonText: "OK",
+                                        confirmButtonColor: "#989ba0",
+                                    })
+                                })
+        }
+    }
+
+    function cancelEdit(){
+        setCancelButton(false)
+        setEditeSaveButton("Editar")
+        setName(profile.name)
+        setAge(profile.age)
+        setImage(profile.image)
+        setBio(profile.bio)
+    }
 
     return (
         <>
             <Comands>
-                <EditButton> Cancelar</EditButton>
-                <EditButton> Salvar</EditButton>
+                <EditButton
+                $cancel={cancelButton}
+                $colorCancel = {true}
+                onClick={cancelEdit}
+                > Cancelar </EditButton>
+                <EditButton $cancel={true} onClick={editFormProfile}> {editeSaveButton}</EditButton>
             </Comands>
             <Box>
                 <MainProfile>
@@ -30,7 +131,9 @@ export default function EditProfile(){
                             type="text"
                             onChange={e => setName(e.target.value)}
                             value={name}
-                            $size={"60px"}                            
+                            $size={"60px"}
+                            disabled={!cancelButton}
+                            ref={nameRef}                       
                         />
                         <label htmlFor="age"> Idade </label>
                         <Enter 
@@ -38,7 +141,8 @@ export default function EditProfile(){
                             type="number"
                             onChange={e => setAge(e.target.value)}
                             value={age}
-                            $size={"60px"} 
+                            $size={"60px"}
+                            disabled={!cancelButton} 
                         />
                         <label htmlFor="image"> Imagem </label>
                         <Enter 
@@ -47,15 +151,17 @@ export default function EditProfile(){
                             type="text"
                             onChange={e => setImage(e.target.value)}
                             value={image}
-                            $size={"60px"} 
+                            $size={"60px"}
+                            disabled={!cancelButton} 
                         />
-                        <label htmlFor="about"> Sobre </label>
+                        <label htmlFor="bio"> Sobre </label>
                         <Enter 
                             placeholder="  Uma breve descrição sobre você.."
                             type="text"
-                            onChange={e => setAbou(e.target.value)}
-                            value={about}
+                            onChange={e => setBio(e.target.value)}
+                            value={bio}
                             $size={"120px"}
+                            disabled={!cancelButton} 
                         />
                     </Forms>
                 </EditFormProfile>
@@ -77,13 +183,15 @@ const EditButton = styled.button`
     height: 39px;
     border: 1px solid #1877f2;
     padding: 3px;
-    background-color: #1877f2;
+    background-color:${props => (props.$colorCancel?"#333333":"#1877f2")};
     border-radius: 10px;
     font-size: 24px;
     font-family: "Oswald", sans-serif;
     font-weight: 700;
     color: #FFFFFF;
     margin-left: 11px;
+
+    display: ${props => (props.$cancel? "block" : "none")}
     
 `
 
