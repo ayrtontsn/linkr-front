@@ -4,17 +4,18 @@ import { useNavigate, useParams } from "react-router-dom";
 import TokenContext from "../contexts/TokenContext";
 import axios from "axios";
 import { BACKEND } from "../components/mock";
-import { Oval } from "react-loader-spinner";
 import FollowersModal from "../components/FollowersModal";
 import EditPostModal from "../components/EditPostModal";
 import DeletePostModal from "../components/DeletePostModal";
-import Swal from "sweetalert2"
+import Header from "../components/Header";
+import postFeed from "../components/posts";
+import Swal from "sweetalert2";
+import { IoPersonAddOutline, IoPersonRemoveOutline } from "react-icons/io5";
 
 export default function UserPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { token, setToken } = useContext(TokenContext);
-  const [activeMenu, setActiveMenu] = useState(false);
+  const { token } = useContext(TokenContext);
   const [userData, setUserData] = useState(null);
   const [userPosts, setUserPosts] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,37 +31,12 @@ export default function UserPage() {
   const [editingPostData, setEditingPostData] = useState(null);
   const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
   const [deletingPostId, setDeletingPostId] = useState(null);
-  const menuRef = useRef(null);
+  const [allPosts, setAllPosts] = useState(null);
 
   const auth = {
     headers: {
       Authorization: `Bearer ${token.token}`,
     },
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setToken(null);
-    setActiveMenu(false);
-    navigate("/");
-  };
-
-  const handleMenuToggle = () => {
-    setActiveMenu(!activeMenu);
-  };
-
-  const handleMenuItemClick = () => {
-    setActiveMenu(false);
-  };
-
-  const handleMyProfile = () => {
-    navigate(`/user/${token.id}`);
-    handleMenuItemClick();
-  };
-
-  const handleFeed = () => {
-    navigate("/feed");
-    handleMenuItemClick();
   };
 
   const handleFollowToggle = async () => {
@@ -102,16 +78,6 @@ export default function UserPage() {
     }
   };
 
-  const handleEditClick = (post) => {
-    setEditingPostData(post);
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteClick = (postId) => {
-    setDeletingPostId(postId);
-    setIsModalDeleteOpen(true);
-  };
-
   const handleSavePost = (updatedPostData) => {
     setUserPosts((currentPosts) =>
       currentPosts.map((post) =>
@@ -140,23 +106,6 @@ export default function UserPage() {
     setEditingPostData(null);
     setDeletingPostId(null);
   };
-
-  // Click outside menu handler
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setActiveMenu(false);
-      }
-    }
-
-    if (activeMenu) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [activeMenu]);
 
   // Check authentication
   useEffect(() => {
@@ -210,127 +159,18 @@ export default function UserPage() {
     }
   }, [id, token]);
 
-  // Loading state
-  if (loading) {
-    return (
-      <Back>
-        <Header>
-          <h1>Linkr</h1>
-          <MenuContainer ref={menuRef}>
-            <Menu onClick={handleMenuToggle}>
-              <Img src={token?.image || null} alt="Profile" />
-              <ion-icon name="menu"></ion-icon>
-            </Menu>
-            <AbaMenu $active={activeMenu}>
-              <BotaoMenu onClick={handleFeed}>Feed</BotaoMenu>
-              <BotaoMenu onClick={handleMyProfile}>Meu Perfil</BotaoMenu>
-              <BotaoMenu onClick={handleLogout}>Sair</BotaoMenu>
-            </AbaMenu>
-          </MenuContainer>
-        </Header>
-        <Loading>
-          <Oval
-            visible={true}
-            height="100"
-            width="100"
-            color="#52B6FF"
-            secondaryColor="#FFFFFF"
-            ariaLabel="oval-loading"
-          />
-        </Loading>
-      </Back>
-    );
-  }
-
   return (
     <Back>
-      <Header>
-        <h1>Linkr</h1>
-        {id !== token.id.toString() && (
-          <FollowButtonMobile
-            onClick={handleFollowToggle}
-            $isFollowing={isFollowing}
-          >
-            <ion-icon
-              name={isFollowing ? "person-remove" : "person-add"}
-            ></ion-icon>
-          </FollowButtonMobile>
-        )}
-        {id === token.id.toString() && (
-          <NewPostButtonMobile>
-            <ion-icon name="create"></ion-icon>
-          </NewPostButtonMobile>
-        )}
-        <SearchButtonMobile>
-          <ion-icon name="search"></ion-icon>
-        </SearchButtonMobile>
-        <MenuContainer ref={menuRef}>
-          <Menu onClick={handleMenuToggle}>
-            <Img src={token?.image || null} alt="Profile" />
-            <ion-icon name="menu"></ion-icon>
-          </Menu>
-          <AbaMenu $active={activeMenu}>
-            <BotaoMenu onClick={handleFeed}>Feed</BotaoMenu>
-            <BotaoMenu onClick={handleMyProfile}>Meu Perfil</BotaoMenu>
-            <BotaoMenu onClick={handleLogout}>Sair</BotaoMenu>
-          </AbaMenu>
-        </MenuContainer>
-      </Header>
+      <Header 
+        showFollowButton={id !== token.id.toString()}
+        isFollowing={isFollowing}
+        onFollowToggle={handleFollowToggle}
+        showNewPostButton={id === token.id.toString()}
+        showSearchButton={true}
+      />
       <UserContainer>
         <PostsContainer>
-          {userPosts && userPosts.length > 0 ? (
-            userPosts.map((post) => (
-              <Post key={post.id}>
-                <User>
-                  <UserImg
-                    src={userData?.image || null}
-                    alt={userData?.username}
-                  />
-                  <Username>{userData?.username}</Username>
-                  {token.id === post.userId && (
-                    <UpdateDeleteIcons>
-                      <span
-                        class="material-symbols-outlined"
-                        onClick={() => handleEditClick(post)}
-                      >
-                        edit
-                      </span>
-                      <ion-icon
-                        name="trash"
-                        onClick={() => handleDeleteClick(post.id)}
-                      ></ion-icon>
-                    </UpdateDeleteIcons>
-                  )}
-                </User>
-                <Content>
-                  <Likes>
-                    <ion-icon name="heart-outline"></ion-icon>
-                    <p>{post.likes?.length || 0} likes</p>
-                  </Likes>
-                  <Box>
-                    <Description>{post.description}</Description>
-                    <MetaData href={post.url} target="_blank">
-                      <MetaContent>
-                        <MetaTitle>{post.dataTitle}</MetaTitle>
-                        <MetaDescription>
-                          {post.dataDescription}
-                        </MetaDescription>
-                        <MetaUrl>{post.url}</MetaUrl>
-                      </MetaContent>
-                      <MetaImage
-                        src={post.dataImage || null}
-                        alt="Link preview"
-                      />
-                    </MetaData>
-                  </Box>
-                </Content>
-              </Post>
-            ))
-          ) : (
-            <NoPostsMessage>
-              Este perfil ainda não fez nenhuma publicação
-            </NoPostsMessage>
-          )}
+          {postFeed(allPosts, setAllPosts, `/posts/user/${id}`)}
         </PostsContainer>
         <ProfileContainer>
           <ProfileImage
@@ -347,13 +187,7 @@ export default function UserPage() {
               >
                 <FollowContent>
                   <span>{isFollowing ? "Parar de seguir" : "Seguir"}</span>
-                  <ion-icon
-                    name={
-                      isFollowing
-                        ? "person-remove-outline"
-                        : "person-add-outline"
-                    }
-                  ></ion-icon>
+                  {isFollowing ? <IoPersonRemoveOutline className="person-icon" /> : <IoPersonAddOutline className="person-icon" />}
                 </FollowContent>
                 {followsLoggedUser && !isFollowing && (
                   <StatsFollowButtonText>Segue você</StatsFollowButtonText>
@@ -406,20 +240,6 @@ export default function UserPage() {
         users={followingData}
         username={userData?.username || "Usuário"}
       />
-
-      <EditPostModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        postData={editingPostData}
-        onSave={handleSavePost}
-      />
-
-      <DeletePostModal
-        isOpen={isModalDeleteOpen}
-        onClose={handleCloseModal}
-        postId={deletingPostId}
-        onDelete={handleDeletePost}
-      />
     </Back>
   );
 }
@@ -435,118 +255,6 @@ const Back = styled.div`
   left: 0;
   overflow-y: auto;
   padding-bottom: 80px;
-`;
-
-const Header = styled.div`
-  display: flex;
-  width: 100%;
-  height: 72px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1% 0 1%;
-  background-color: #151515;
-  z-index: 2;
-
-  h1 {
-    font-family: "Passion One", sans-serif;
-    color: #ffffff;
-    font-size: 49px;
-    font-weight: 700;
-    line-height: 100%;
-    letter-spacing: 5%;
-    word-spacing: 5%;
-    @media (max-width: 768px) {
-      font-size: 28px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    position: fixed;
-    bottom: 11px;
-    left: 11px;
-    padding-left: 25px;
-    padding-right: 25px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    background-color: #151515;
-    width: 95%;
-    height: 60px;
-    border-radius: 15px;
-    box-shadow: 0 0 10px 0 rgba(72, 72, 72, 1);
-  }
-`;
-
-const MenuContainer = styled.div`
-  position: relative;
-`;
-
-const Menu = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 97px;
-  height: 80%;
-  font-size: 50px;
-  color: #ffffff;
-  background-color: #333333;
-  border-radius: 10px;
-  padding: 3px;
-  cursor: pointer;
-  ion-icon {
-    @media (max-width: 768px) {
-      display: none;
-    }
-  }
-  @media (max-width: 768px) {
-    padding: 0;
-    border-radius: 50px;
-    object-fit: cover;
-    width: 45px;
-    height: 45px;
-  }
-`;
-
-const Img = styled.img`
-  border-radius: 10px;
-  width: 53px;
-  height: 53px;
-  object-fit: cover;
-
-  @media (max-width: 768px) {
-    padding: 0;
-    border-radius: 50px;
-    object-fit: cover;
-    width: 50px;
-    height: 50px;
-    border: 3px solid #333333;
-  }
-`;
-
-const AbaMenu = styled.div`
-  display: ${(props) => (props.$active ? "block" : "none")};
-  width: 115px;
-  position: fixed;
-  right: 8px;
-  padding-right: 1.6%;
-
-  @media (max-width: 768px) {
-    bottom: 80px;
-  }
-
-  @media (min-width: 769px) {
-    top: 80px;
-  }
-`;
-
-const BotaoMenu = styled.button`
-  background-color: #000000;
-  color: #ffffff;
-  width: 100%;
-  height: 40px;
-  margin-top: 5px;
-  border: 0;
-  border-radius: 5px;
-  cursor: pointer;
 `;
 
 const Loading = styled.div`
@@ -609,72 +317,6 @@ const ProfileName = styled.h2`
   padding-right: 10px;
 `;
 
-const FollowButtonMobile = styled.button`
-  display: none;
-  background-color: ${(props) => (props.$isFollowing ? "#949494" : "#1877F2")};
-  color: ${(props) => (props.$isFollowing ? "#151515" : "#ffffff")};
-  border: none;
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  @media (max-width: 768px) {
-    display: flex;
-  }
-
-  @media (min-width: 769px) {
-    display: none;
-  }
-`;
-
-const NewPostButtonMobile = styled.button`
-  display: none;
-  background-color: #151515;
-  color: #ffffff;
-  border: none;
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  font-size: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  @media (max-width: 768px) {
-    display: flex;
-  }
-
-  @media (min-width: 769px) {
-    display: none;
-  }
-`;
-
-const SearchButtonMobile = styled.button`
-  display: none;
-  background-color: #151515;
-  color: #ffffff;
-  border: none;
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  font-size: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  @media (max-width: 768px) {
-    display: flex;
-  }
-
-  @media (min-width: 769px) {
-    display: none;
-  }
-`;
-
 const StatsSection = styled.div`
   display: flex;
   flex-direction: column;
@@ -720,8 +362,7 @@ const FollowContent = styled.div`
     font-size: 17px;
     margin-right: 10px;
   }
-  ion-icon {
-    --ionicon-stroke-width: 46px;
+  .person-icon {
     font-size: 18px;
   }
 `;
@@ -787,225 +428,4 @@ const PostsContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const Post = styled.div`
-  width: 100%;
-  border-radius: 16px;
-  background-color: #171717;
-  padding: 20px;
-  margin-bottom: 20px;
-  position: relative;
-
-  @media (max-width: 768px) {
-    border-radius: 0;
-    width: 100%;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-`;
-
-const User = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  width: 100%;
-
-  @media (max-width: 768px) {
-    position: static;
-  }
-`;
-
-const UpdateDeleteIcons = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 32px;
-  position: absolute;
-  right: 20px;
-  bottom: 233px;
-
-  ion-icon {
-    font-size: 25px;
-    color: #ffffff;
-    cursor: pointer;
-    @media (max-width: 768px) {
-      font-size: 20px;
-    }
-  }
-
-  span {
-    font-size: 25px;
-    color: #ffffff;
-    cursor: pointer;
-    @media (max-width: 768px) {
-      font-size: 20px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    position: static;
-  }
-`;
-
-const UserImg = styled.img`
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 5px solid #333333;
-  position: absolute;
-  z-index: 1;
-  bottom: 220px;
-  @media (max-width: 768px) {
-    position: static;
-    border: none;
-    margin-right: 15px;
-    width: 40px;
-    height: 40px;
-  }
-`;
-
-const Username = styled.span`
-  color: #ffffff;
-  position: absolute;
-  z-index: 0;
-  bottom: 229px;
-  left: 30px;
-  font-family: "Lato", sans-serif;
-  font-size: 19px;
-  font-weight: 400;
-  background-color: #333333;
-  padding-left: 50px;
-  padding-right: 8px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  border-radius: 15px;
-  @media (max-width: 768px) {
-    position: absolute;
-    bottom: 290px;
-    left: 85px;
-    border-radius: 0;
-    padding: 0;
-    background-color: transparent;
-    font-size: 16px;
-  }
-`;
-
-const Content = styled.div`
-  margin-top: 55px;
-  display: flex;
-
-  @media (max-width: 768px) {
-    flex-direction: column-reverse;
-    margin-top: 0;
-    align-items: flex-start;
-  }
-`;
-
-const Likes = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  margin-right: 20px;
-
-  ion-icon {
-    font-size: 20px;
-    color: #ffffff;
-    margin-bottom: 5px;
-    cursor: pointer;
-  }
-
-  p {
-    color: #ffffff;
-    font-family: "Lato", sans-serif;
-    font-size: 11px;
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: row;
-
-    ion-icon {
-      margin-right: 5px;
-      margin-bottom: 0;
-    }
-  }
-`;
-
-const Box = styled.div`
-  flex: 1;
-`;
-
-const Description = styled.p`
-  color: #b7b7b7;
-  font-family: "Lato", sans-serif;
-  font-size: 17px;
-  margin-bottom: 15px;
-`;
-
-const MetaData = styled.a`
-  display: flex;
-  border: 1px solid #4d4d4d;
-  border-radius: 11px;
-  overflow: hidden;
-  text-decoration: none;
-  @media (max-width: 768px) {
-    margin-bottom: 15px;
-  }
-`;
-
-const MetaContent = styled.div`
-  flex: 1;
-  padding: 15px;
-`;
-
-const MetaTitle = styled.h3`
-  color: #cecece;
-  font-family: "Lato", sans-serif;
-  font-size: 16px;
-  margin: 0 0 10px 0;
-`;
-
-const MetaDescription = styled.p`
-  color: #9b9595;
-  font-family: "Lato", sans-serif;
-  font-size: 11px;
-  margin: 0 0 10px 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
-const MetaUrl = styled.p`
-  color: #9b9595;
-  font-family: "Lato", sans-serif;
-  font-size: 11px;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const MetaImage = styled.img`
-  width: 153px;
-  height: 153px;
-  object-fit: cover;
-
-  @media (max-width: 768px) {
-    width: 100px;
-    height: 100px;
-  }
-`;
-
-const NoPostsMessage = styled.p`
-  color: #ffffff;
-  font-family: "Lato", sans-serif;
-  font-size: 20px;
-  text-align: center;
-  margin-top: 50px;
 `;

@@ -118,7 +118,6 @@ export default function EditPostModal({ isOpen, onClose, postData, onSave }) {
         <MobileCloseButton
           onClick={handleClose}
           disabled={isLoading}
-          data-test="cancel"
         >
           Fechar
         </MobileCloseButton>
@@ -130,7 +129,6 @@ export default function EditPostModal({ isOpen, onClose, postData, onSave }) {
           onChange={(e) => setEditedLink(e.target.value)}
           disabled={isLoading}
           placeholder="http://..."
-          data-test="link"
         />
         <Label>Descrição do post:</Label>
         <DescriptionTextarea
@@ -140,13 +138,11 @@ export default function EditPostModal({ isOpen, onClose, postData, onSave }) {
           onKeyDown={handleKeyDown}
           disabled={isLoading}
           placeholder="Edite a descrição..."
-          data-test="description"
         />
         <DesktopButtonContainer>
           <CloseButton
             onClick={handleClose}
             disabled={isLoading}
-            data-test="cancel"
           >
             {" "}
             Fechar
@@ -154,7 +150,6 @@ export default function EditPostModal({ isOpen, onClose, postData, onSave }) {
           <SaveButton
             onClick={handleSave}
             disabled={isLoading}
-            data-test="save-btn"
           >
             {" "}
             {isLoading ? (
@@ -174,7 +169,6 @@ export default function EditPostModal({ isOpen, onClose, postData, onSave }) {
         <MobileSaveButton
           onClick={handleSave}
           disabled={isLoading}
-          data-test="save-btn"
         >
           {isLoading ? (
             <Oval

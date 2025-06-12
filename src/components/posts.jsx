@@ -1,14 +1,16 @@
-import styled from "styled-components"
-import { BACKEND } from "./mock"
-import axios from "axios"
-import { useContext, useEffect, useState } from "react"
-import { Oval } from "react-loader-spinner"
-import TokenContext from "../contexts/TokenContext"
-import Swal from "sweetalert2"
+import styled from "styled-components";
+import { BACKEND } from "./mock";
+import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import { Oval } from "react-loader-spinner";
+import TokenContext from "../contexts/TokenContext";
+import Swal from "sweetalert2";
 import EditPostModal from "./EditPostModal";
 import DeletePostModal from "./DeletePostModal";
 import { useNavigate } from "react-router-dom";
-import { Tooltip } from 'react-tooltip'
+import { Tooltip } from 'react-tooltip';
+import { FiTrash, FiEdit2 } from "react-icons/fi";
+import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
 
 export default function postFeed(allPosts, setAllPosts, routeGetPosts){
     const {token, userProfile} = useContext(TokenContext)
@@ -29,7 +31,7 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
             const route = BACKEND+routeGetPosts
             const requisition = axios.get(route, auth)
                                     .then(response => {setAllPosts(response.data)
-                                        console.log(response.data[0])
+                                        console.log(response.data)
                                     })
                                     
                                     .catch(e => {
@@ -110,7 +112,11 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
     };
 
     const navigateToUserProfile = (userId) => {
-        navigate(`/user/${userId}`);
+        if (userId === token.id) {
+            navigate("/user/my-profile");
+        } else {
+            navigate(`/user/${userId}`);
+        }
     };
 
     function getLikeMessage(likes) {
@@ -135,7 +141,7 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
 
         return `${likes[0].name} e ${totalLikes - 1} ${totalLikes - 1 === 1 ? "outra pessoa" : "outras pessoas"} curtiram`;
         };
-
+        console.log(userProfile)
     return (
         <>
             <NoItens $noitens={allPosts.length}>
@@ -145,21 +151,21 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
             <Post key={post.id}>
                 <User>
                     <Img 
-                        src={post.userImage || userProfile.image} 
+                        src={post.user.image || userProfile.image} 
                         onClick={() => navigateToUserProfile(post.userId)}
                         style={{ cursor: 'pointer' }}
                     />
                     <Username 
                         onClick={() => navigateToUserProfile(post.userId)}
                     >
-                        {post.userName || userProfile.username}
+                        {post.user.username || userProfile.username}
                     </Username>
                     {token.id === post.userId && (
-                        <>
-                            <span class="material-symbols-outlined" onClick={() => handleEditClick(post)}>edit</span>
-                            <ion-icon name="trash" onClick={() => handleDeleteClick(post.id)}></ion-icon>
-                        </>
-                    )}
+                    <UpdateDeleteIcons>
+                        <FiEdit2 className="user-icon" onClick={() => handleEditClick(post)}/>
+                        <FiTrash className="user-icon" onClick={() => handleDeleteClick(post.id)}/>
+                    </UpdateDeleteIcons>
+                  )}
                 </User>
                 <Content>
                     <Likes 
@@ -168,20 +174,36 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
                     data-tooltip-id = "tooltip-likes"
                     style = {{ cursor: 'pointer' }}
                     >
-                        <ion-icon name="heart" onClick={() => handleLike(post.id)}></ion-icon>
+                        {post.likes.some((like) => like.id === token.id) ? (
+                            <IoHeartSharp
+                            className="heart-icon"
+                            style={{ color: "#FF0000" }}
+                            onClick={() => handleLike(post.id)}
+                            />
+                        ) : (
+                            <IoHeartOutline
+                            className="heart-icon"
+                            onClick={() => handleLike(post.id)}
+                            />
+                        )}
                         <p>{post.likes.length} likes</p>
                         <h4> · {getLikeMessage(post.likes)}</h4>
                         <Tooltip id="tooltip-likes" className="custom-tooltip"/>
                     </Likes>
                     <Box>
-                        <Title><h1>{post.description}</h1></Title>
+                        <Description>{post.description}</Description>
                         <MetaData href={post.url} target="_blank">
-                            <Title >
-                                <h2>{post.dataTitle}</h2>
-                                <h3>{post.dataDescription}</h3>
-                                <p>{post.url}</p>
-                            </Title>
-                            <ImgMetaData src={post.dataImage || null}></ImgMetaData>
+                        <MetaContent>
+                            <MetaTitle>{post.dataTitle}</MetaTitle>
+                            <MetaDescription>
+                            {post.dataDescription}
+                            </MetaDescription>
+                            <MetaUrl>{post.url}</MetaUrl>
+                        </MetaContent>
+                        <MetaImage
+                            src={post.dataImage || null}
+                            alt="Link preview"
+                        />
                         </MetaData>
                     </Box>
                 </Content>
@@ -207,72 +229,173 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
 
 
 const Post = styled.div`
-    width: 90%;
-    max-width: 660px;
-    border-radius: 10px;
+    width: 100%;
+    border-radius: 16px;
     background-color: #171717;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding:10px;
-    margin: 20px ;
-    font-weight: 300;
-    font-size: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
 
     @media (max-width: 768px) {
-        width: 100%;
         border-radius: 0;
+        width: 100%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
     }
 `
 
 const User = styled.div`
     display: flex;
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
-    color: #FFFFFF;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    position: static;
+  }
 `
 
+const UpdateDeleteIcons = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  position: absolute;
+  right: 20px;
+  bottom: 233px;
+  .user-icon {
+    font-size: 25px;
+    color: #ffffff;
+    cursor: pointer;
+    @media (max-width: 768px) {
+      font-size: 20px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    position: static;
+  }
+`;
+
 const Username = styled.span`
-    color: #FFFFFF;
+    color: #ffffff;
+    position: absolute;
+    z-index: 0;
+    bottom: 229px;
+    left: 30px;
     font-family: "Lato", sans-serif;
     font-size: 19px;
-    cursor: pointer;
-    
-    &:hover {
-        text-decoration: underline;
+    font-weight: 400;
+    background-color: #333333;
+    padding-left: 50px;
+    padding-right: 8px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 15px;
+    @media (max-width: 768px) {
+        position: absolute;
+        bottom: 306px;
+        left: 85px;
+        border-radius: 0;
+        padding: 0;
+        background-color: transparent;
+        font-size: 16px;
     }
 `
 
 const Img = styled.img`
-    border-radius: 100%;
-    width:50px;
-    height: 50px;
-    background-color: #f10909;
-    margin-right:10px;
+    width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid #333333;
+  position: absolute;
+  z-index: 1;
+  bottom: 220px;
+  @media (max-width: 768px) {
+    position: static;
+    border: none;
+    margin-right: 15px;
+    width: 40px;
+    height: 40px;
+  }
 `
 
 const MetaData = styled.a`
-    display: inline-flex;
-    border: 1px solid #4C4C4C;
-    border-radius: 10px;
-    width: 100%;
-    justify-content: space-between;
-    text-decoration: none;
-`
+  display: flex;
+  border: 1px solid #4d4d4d;
+  border-radius: 11px;
+  overflow: hidden;
+  text-decoration: none;
+  @media (max-width: 768px) {
+    margin-bottom: 15px;
+  }
+`;
+
+const MetaContent = styled.div`
+  flex: 1;
+  padding: 15px;
+`;
+
+const MetaTitle = styled.h3`
+  color: #cecece;
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  margin: 0 0 10px 0;
+`;
+
+const MetaDescription = styled.p`
+  color: #9b9595;
+  font-family: "Lato", sans-serif;
+  font-size: 11px;
+  margin: 0 0 10px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
+const MetaUrl = styled.p`
+  color: #9b9595;
+  font-family: "Lato", sans-serif;
+  font-size: 11px;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const MetaImage = styled.img`
+  width: 153px;
+  height: 153px;
+  object-fit: cover;
+
+  @media (max-width: 768px) {
+    width: 100px;
+    height: 100px;
+  }
+`;
 
 const Content = styled.div`
-    display: flex;
-    flex-direction: row;
-    box-sizing: content-box;
-    align-items: end;
-    width: 100%;
-    height: 100%;
+    margin-top: 55px;
+  display: flex;
 
-    @media (max-width: 768px) {
-        flex-direction: column-reverse;
-        align-items: start;
-    }
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+    margin-top: 0;
+    align-items: flex-start;
+  }
 `
+
+const Description = styled.p`
+  color: #b7b7b7;
+  font-family: "Lato", sans-serif;
+  font-size: 17px;
+  margin-bottom: 15px;
+`;
 
 const Title = styled.div`
 
@@ -348,13 +471,8 @@ const ImgMetaData = styled.img`
 `
 
 const Box = styled.div`
-    display: block;
-    width: 100%;
-
-    @media (min-width: 769px) {
-        width: 90%;
-    }
-`
+  flex: 1;
+`;
 
 const Loading = styled.div`
     width: 100%;
@@ -380,7 +498,7 @@ const Likes = styled.div`
     margin: 0;
     width: 10%;
     color: ${props => (props.$likeCollor ? "#FF0000" : "#FFFFFF")};
-    ion-icon{
+    .heart-icon {
         font-size: 18px;
     }
 

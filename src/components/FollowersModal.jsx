@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { IoClose } from "react-icons/io5";
 
 export default function FollowersModal({
   isOpen,
@@ -29,7 +30,7 @@ export default function FollowersModal({
             {username?.split(" ")[0]}
           </ModalTitle>
           <CloseButton onClick={onClose}>
-            <ion-icon name="close"></ion-icon>
+            <IoClose />
           </CloseButton>
         </ModalHeader>
         <UsersList>
