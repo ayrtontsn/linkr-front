@@ -85,7 +85,7 @@ export default function newPost(activeNewPost, onNewPost){
 
 const NewPost = styled.form`
     display:flex;
-    width: 90%;
+    width: 100%;
     max-width: 660px;
     border-radius: 10px;
     background-color: #FFFFFF;
@@ -94,6 +94,7 @@ const NewPost = styled.form`
     padding:10px 10px 0 10px;
     font-weight: 300;
     font-size: 20px;
+    margin-bottom: 20px;
 
     z-index: 2;
 

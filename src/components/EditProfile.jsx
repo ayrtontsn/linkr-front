@@ -244,6 +244,7 @@ const Box = styled.div`
     width: 100%;
     background-color: #171717;
     display: flex;
+    border-radius: 15px;
 
     @media (max-width: 768px) {
         flex-direction: column;
@@ -277,6 +278,9 @@ const MainProfile = styled.div`
 
 const ImgProfile = styled.img`
     width: 100%;
+    height: 100%;
+    max-height: 212px;
+    object-fit: cover;
     border-radius: 15px 0 0 0;
     @media (max-width: 768px) {
         border-radius: 0;

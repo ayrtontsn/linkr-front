@@ -4,11 +4,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import TokenContext from "../contexts/TokenContext";
 import axios from "axios";
 import { BACKEND } from "../components/mock";
-import { Oval } from "react-loader-spinner";
 import FollowersModal from "../components/FollowersModal";
 import EditPostModal from "../components/EditPostModal";
 import DeletePostModal from "../components/DeletePostModal";
 import Header from "../components/Header";
+import postFeed from "../components/posts";
 import Swal from "sweetalert2"
 
 export default function UserPage() {
@@ -30,6 +30,7 @@ export default function UserPage() {
   const [editingPostData, setEditingPostData] = useState(null);
   const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
   const [deletingPostId, setDeletingPostId] = useState(null);
+  const [allPosts, setAllPosts] = useState(null);
 
   const auth = {
     headers: {
@@ -74,16 +75,6 @@ export default function UserPage() {
       console.error("Error fetching following:", error);
       alert("Não foi possível carregar os usuários seguidos. Tente novamente.");
     }
-  };
-
-  const handleEditClick = (post) => {
-    setEditingPostData(post);
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteClick = (postId) => {
-    setDeletingPostId(postId);
-    setIsModalDeleteOpen(true);
   };
 
   const handleSavePost = (updatedPostData) => {
@@ -167,25 +158,6 @@ export default function UserPage() {
     }
   }, [id, token]);
 
-  // Loading state
-  if (loading) {
-    return (
-      <Back>
-        <Header />
-        <Loading>
-          <Oval
-            visible={true}
-            height="100"
-            width="100"
-            color="#52B6FF"
-            secondaryColor="#FFFFFF"
-            ariaLabel="oval-loading"
-          />
-        </Loading>
-      </Back>
-    );
-  }
-
   return (
     <Back>
       <Header 
@@ -197,59 +169,7 @@ export default function UserPage() {
       />
       <UserContainer>
         <PostsContainer>
-          {userPosts && userPosts.length > 0 ? (
-            userPosts.map((post) => (
-              <Post key={post.id}>
-                <User>
-                  <UserImg
-                    src={userData?.image || null}
-                    alt={userData?.username}
-                  />
-                  <Username>{userData?.username}</Username>
-                  {token.id === post.userId && (
-                    <UpdateDeleteIcons>
-                      <span
-                        class="material-symbols-outlined"
-                        onClick={() => handleEditClick(post)}
-                      >
-                        edit
-                      </span>
-                      <ion-icon
-                        name="trash"
-                        onClick={() => handleDeleteClick(post.id)}
-                      ></ion-icon>
-                    </UpdateDeleteIcons>
-                  )}
-                </User>
-                <Content>
-                  <Likes>
-                    <ion-icon name="heart-outline"></ion-icon>
-                    <p>{post.likes?.length || 0} likes</p>
-                  </Likes>
-                  <Box>
-                    <Description>{post.description}</Description>
-                    <MetaData href={post.url} target="_blank">
-                      <MetaContent>
-                        <MetaTitle>{post.dataTitle}</MetaTitle>
-                        <MetaDescription>
-                          {post.dataDescription}
-                        </MetaDescription>
-                        <MetaUrl>{post.url}</MetaUrl>
-                      </MetaContent>
-                      <MetaImage
-                        src={post.dataImage || null}
-                        alt="Link preview"
-                      />
-                    </MetaData>
-                  </Box>
-                </Content>
-              </Post>
-            ))
-          ) : (
-            <NoPostsMessage>
-              Este perfil ainda não fez nenhuma publicação
-            </NoPostsMessage>
-          )}
+          {postFeed(allPosts, setAllPosts, `/posts/user/${id}`)}
         </PostsContainer>
         <ProfileContainer>
           <ProfileImage
@@ -324,20 +244,6 @@ export default function UserPage() {
         title="Seguidos por "
         users={followingData}
         username={userData?.username || "Usuário"}
-      />
-
-      <EditPostModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        postData={editingPostData}
-        onSave={handleSavePost}
-      />
-
-      <DeletePostModal
-        isOpen={isModalDeleteOpen}
-        onClose={handleCloseModal}
-        postId={deletingPostId}
-        onDelete={handleDeletePost}
       />
     </Back>
   );

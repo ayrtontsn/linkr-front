@@ -37,14 +37,13 @@ export default function MyProfilePage(){
                 {EditProfile()}
             </ProfileEdit>
             <Title><h2>Meus Posts</h2></Title>
-            <Feed>
-                <Post>
-                    <NewPost>
-                        {newPost(activeNewPost, handleNewPost)}
-                    </NewPost>
-                    {postFeed(allPosts, setAllPosts, `/posts/user/${token.id}`)}
-                </Post>
-            </Feed>
+            <Post>
+                <NewPost>
+                    {newPost(activeNewPost, handleNewPost)}
+                </NewPost>
+                {postFeed(allPosts, setAllPosts, `/posts/user/${token.id}`)}
+            </Post>
+
 
         </Back>
     )
@@ -64,17 +63,12 @@ const ProfileEdit = styled.div`
     }
 `
 
-const Feed = styled.div`
-    display: flex;
-    justify-content: center;
-    width: 100vw;
-`
-
 const Post = styled.div`
     width: 100%;
-    display: block;
-    justify-items: center;
-    overflow-y: scroll;
+  max-width: 630px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `
 
 const Back = styled.div`
@@ -114,6 +108,6 @@ const Title = styled.div`
         font-family: "Passion One", sans-serif;
         font-size: 43px;
         font-weight: 700px;
-        margin: 10px;
+        margin: 30px;
     }
 `

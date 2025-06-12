@@ -50,16 +50,19 @@ export default function FeedPage(){
 }
 const Feed = styled.div`
     display: flex;
-    justify-content: center;
-    width: 100vw;
-    height: 100%;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 990px;
+  margin-top: 30px;
 `
 
 const Post = styled.div`
-    display: block;
-    justify-items: center;
-    overflow-y: scroll;
-    height: calc(98% - 125px);
+    width: 100%;
+  max-width: 630px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `
 
 const Suggestions = styled.div`
@@ -73,14 +76,16 @@ const Suggestions = styled.div`
 `
 
 const Back = styled.div`
-    position: fixed;
-    display: block;
-    justify-items: center;
-    background-color: #333333;
-    width: 100vw;
-    height: 100%;
-    left: 0;
-`
+  position: fixed;
+  display: block;
+  justify-items: center;
+  background-color: #333333;
+  width: 100vw;
+  height: 100%;
+  left: 0;
+  overflow-y: auto;
+  padding-bottom: 80px;
+`;
 
 const NewPost = styled.div`
     display: flex;
