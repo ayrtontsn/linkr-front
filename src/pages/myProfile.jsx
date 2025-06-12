@@ -82,7 +82,7 @@ export default function MyProfilePage(){
                     <NewPost>
                         {newPost(activeNewPost, handleNewPost)}
                     </NewPost>
-                    {postFeed(allPosts, setAllPosts)}
+                    {postFeed(allPosts, setAllPosts, `/posts/user/${token.id}`)}
                 </Post>
             </Feed>
 
@@ -98,6 +98,10 @@ const ProfileEdit = styled.div`
     justify-items: end;
     align-content: end;
     padding: 70px 0 0 0;
+
+    @media (max-width: 768px) {
+        padding: 0;
+    }
 `
 
 const Feed = styled.div`
@@ -107,9 +111,10 @@ const Feed = styled.div`
 `
 
 const Post = styled.div`
+    width: 100%;
     display: block;
     justify-items: center;
-    height: calc(98% - 125px);
+    overflow-y: scroll;
 `
 
 const Back = styled.div`
@@ -121,6 +126,10 @@ const Back = styled.div`
     height: 100%;
     left: 0;
     overflow-y:  scroll;
+
+    @media (max-width: 768px) {
+        height: calc(100% - 65px);
+    }
 `
 const Header = styled.div`
     display: flex;

@@ -9,7 +9,7 @@ import EditPostModal from "./EditPostModal";
 import DeletePostModal from "./DeletePostModal";
 import { Tooltip } from 'react-tooltip'
 
-export default function postFeed(allPosts, setAllPosts){
+export default function postFeed(allPosts, setAllPosts, routeGetPosts){
     const {token, userProfile} = useContext(TokenContext)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPostData, setEditingPostData] = useState(null);
@@ -24,8 +24,12 @@ export default function postFeed(allPosts, setAllPosts){
 
     useEffect(() =>{
             if (!allPosts) {
-            const requisition = axios.get(`${BACKEND}/allposts`, auth)
-                                    .then(response => {setAllPosts(response.data)})
+            const route = BACKEND+routeGetPosts
+            const requisition = axios.get(route, auth)
+                                    .then(response => {setAllPosts(response.data)
+                                        console.log(response.data[0])
+                                    })
+                                    
                                     .catch(e => {
                                         Swal.fire({
                                             icon: "error",
@@ -135,8 +139,8 @@ export default function postFeed(allPosts, setAllPosts){
             <Post key={post.id}>
                 <User>
                     <UserInfo>
-                        <Img src={post.userImage ||null}></Img>
-                        {post.userName}
+                        <Img src={post.userImage || userProfile.image}></Img>
+                        {post.userName || userProfile.username}
                     </UserInfo>
 
                     {token.id === post.userId && (

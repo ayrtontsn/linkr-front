@@ -60,6 +60,7 @@ export default function EditProfile(){
     }, [profile]);
 
     const [editeSaveButton, setEditeSaveButton] = useState("Editar")
+    const [editeSaveButtonIonIcon, setEditeSaveButtonIonIcon] = useState("create")
     const [cancelButton, setCancelButton] = useState(false)
     const nameRef = useRef(null)
 
@@ -67,6 +68,7 @@ export default function EditProfile(){
         if(!cancelButton){
             setCancelButton(true)
             setEditeSaveButton("Salvar")
+            setEditeSaveButtonIonIcon("checkmark")
 
             setTimeout(() => {
                 nameRef.current?.focus();
@@ -74,6 +76,7 @@ export default function EditProfile(){
         } else {
             setIsLoading(true)
             setEditeSaveButton("Salvando..")
+            setEditeSaveButtonIonIcon("reload")
             try{
                 const response = await axios.put(`${BACKEND}/myprofile`, {username: name, age, bio, image},auth)
                 console.log(response)
@@ -114,6 +117,7 @@ export default function EditProfile(){
     function cancelEdit(){
         setCancelButton(false)
         setEditeSaveButton("Editar")
+        setEditeSaveButtonIonIcon("create")
         setName(profile.name)
         setAge(profile.age)
         setImage(profile.image)
@@ -131,49 +135,57 @@ export default function EditProfile(){
                 <EditButton $cancel={true} onClick={editFormProfile}> {editeSaveButton}</EditButton>
             </Comands>
             <Box>
-                <MainProfile>
+                <MainProfile >
                     <ImgProfile src = {userProfile.image}></ImgProfile>
+                    <ComandsSmall>
+                        <EditButton
+                            $cancel={cancelButton}
+                            $colorCancel = {true}
+                            onClick={cancelEdit}
+                        ><ion-icon name="close-circle"></ion-icon></EditButton>
+                        <EditButton $cancel={true} onClick={editFormProfile}> <ion-icon name={editeSaveButtonIonIcon}></ion-icon></EditButton>
+                    </ComandsSmall>
                     <p>{userProfile.username}</p>
                 </MainProfile>
                 <EditFormProfile>
                     <Forms>
-                        <label htmlFor="nome"> Nome </label>
+                        <label htmlFor="nome"> Nome: </label>
                         <Enter 
                             placeholder="  Digite seu nome"
                             required
                             type="text"
                             onChange={e => setName(e.target.value)}
                             value={name}
-                            $size={"60px"}
+                            $short={true}
                             disabled={!cancelButton || isLoading}
                             ref={nameRef}                       
                         />
-                        <label htmlFor="age"> Idade </label>
+                        <label htmlFor="age"> Idade: </label>
                         <Enter 
                             placeholder="  Digite sua Idade"
                             type="number"
                             onChange={e => setAge(e.target.value)}
                             value={age}
-                            $size={"60px"}
+                            $short={true}
                             disabled={!cancelButton || isLoading} 
                         />
-                        <label htmlFor="image"> Imagem </label>
+                        <label htmlFor="image"> Imagem: </label>
                         <Enter 
                             placeholder="  Url de imagem"
                             required
                             type="text"
                             onChange={e => setImage(e.target.value)}
                             value={image}
-                            $size={"60px"}
+                            $short={true}
                             disabled={!cancelButton || isLoading} 
                         />
-                        <label htmlFor="bio"> Sobre </label>
+                        <label htmlFor="bio"> Sobre mim: </label>
                         <Enter 
                             placeholder="  Uma breve descrição sobre você.."
                             type="text"
                             onChange={e => setBio(e.target.value)}
                             value={bio}
-                            $size={"120px"}
+                            $short={false}
                             disabled={!cancelButton || isLoading} 
                         />
                     </Forms>
@@ -183,12 +195,26 @@ export default function EditProfile(){
     )
 }
 
-
 const Comands = styled.div`
     max-width: 100%;
     display: flex;
     color: #FFFFFF;
     padding-bottom: 11px;
+
+    @media (max-width: 768px) {
+        display: none;
+    }
+`
+
+const ComandsSmall = styled.div`
+    display: none;
+
+    @media (max-width: 768px) {
+        display: flex;
+        position: absolute;
+        top: 85vw;
+        right: 10%;
+    }
 `
 
 const EditButton = styled.button`
@@ -204,7 +230,14 @@ const EditButton = styled.button`
     color: #FFFFFF;
     margin-left: 11px;
 
-    display: ${props => (props.$cancel? "block" : "none")}
+    display: ${props => (props.$cancel? "block" : "none")};
+
+    @media (max-width: 768px) {
+        width: 50px;
+        height: 50px;
+        border-radius: 100%;
+        color: ${props => (props.$colorCancel?"#FF0000":"#FFFFFF")};
+    }
     
 `
 
@@ -212,7 +245,11 @@ const Box = styled.div`
     width: 100%;
     background-color: #171717;
     display: flex;
-    border-radius: 15px;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        background-color: #333333;
+    }
 `
 
 const MainProfile = styled.div`
@@ -227,20 +264,31 @@ const MainProfile = styled.div`
         font-size: 36px;
         font-family: "Oswald", sans-serif;
         font-weight: 700;
+        @media (max-width: 768px) {
+            margin-top: 20px;
+            margin-bottom: 50px;
+        }
     }
 
-
+    @media (max-width: 768px) {
+        width: 100%;
+        position: relative;
+    }
 `
 
 const ImgProfile = styled.img`
     width: 100%;
     border-radius: 15px 0 0 0;
+    @media (max-width: 768px) {
+        border-radius: 0;
+    }
 `
 const EditFormProfile = styled.div`
     width: 80%;
     padding: 0 25px ;
     display: contents;
     justify-content: end;
+
 `
 
 const Forms = styled.form`
@@ -254,12 +302,23 @@ const Forms = styled.form`
         width: 70px;
         color: #FFFFFF;
         align-content: center;
+        @media (max-width: 768px) {
+            width: 90%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        display: flex;
+        flex-direction: column;
+        margin: 0;
     }
 `
 
 const Enter = styled.textarea`
     width: calc(100% - 70px);
-    height: ${props => props.$size};
+    height: ${props => (props.$short?"60px":"120px")};
     border-radius: 5px;
     border: 0;
     background-color: #EFEFEF;
@@ -269,4 +328,10 @@ const Enter = styled.textarea`
     font-weight: 300;
     text-align: left;
     align-content: center;
+
+    @media (max-width: 768px) {
+        width: 95%;
+        margin: 5px 0;
+        height: ${props => (props.$short?"45x":"80px")};
+    }
 `

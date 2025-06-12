@@ -77,7 +77,7 @@ export default function FeedPage(){
             <Feed>
                 <Post>
                     {newPost(activeNewPost, handleNewPost)}
-                    {postFeed(allPosts, setAllPosts)}
+                    {postFeed(allPosts, setAllPosts, "/allposts")}
                 </Post>
                 <Suggestions>
                     {suggestionsUsers()}
