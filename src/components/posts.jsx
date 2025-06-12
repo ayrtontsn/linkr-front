@@ -10,7 +10,7 @@ import DeletePostModal from "./DeletePostModal";
 import { Tooltip } from 'react-tooltip'
 
 export default function postFeed(allPosts, setAllPosts){
-    const {token} = useContext(TokenContext)
+    const {token, userProfile} = useContext(TokenContext)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPostData, setEditingPostData] = useState(null);
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
@@ -66,7 +66,7 @@ export default function postFeed(allPosts, setAllPosts){
                 ...post,
                 likes: userAlreadyLiked
                     ? post.likes.filter(user => user.id !== token.id) 
-                    : [...post.likes, { nome: token.username, id: token.id }]                
+                    : [...post.likes, { nome: userProfile.username, id: token.id }]                
                 };
             }
             return post;

@@ -9,7 +9,7 @@ export default function newPost(activeNewPost, onNewPost){
     const [url, setUrl] = useState("")
     const [description, setDescription] = useState("")
     const [buttonPublicar, setbuttonPublicar] = useState("Publicar")
-    const {token} = useContext(TokenContext)
+    const {token, userProfile} = useContext(TokenContext)
 
     const auth = {
         headers: {
@@ -31,8 +31,8 @@ export default function newPost(activeNewPost, onNewPost){
                 // Complete the post data with user information
                 const completePost = {
                     ...response.data,
-                    userImage: token.image,
-                    userName: token.username,
+                    userImage: userProfile.image,
+                    userName: userProfile.username,
                     userId: token.id,
                     likes: response.data.likes || []
                 };
@@ -59,7 +59,7 @@ export default function newPost(activeNewPost, onNewPost){
 
     return(
         <NewPost onSubmit={createPost} $active = {activeNewPost}>
-            <Img src={token.image || null}></Img>
+            <Img src={userProfile.image || null}></Img>
             <NewPostForm>
                 O que você tem pra compartilhar hoje?
                 <Enter 

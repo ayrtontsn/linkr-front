@@ -8,7 +8,7 @@ import { useRef } from "react"
 
 export default function EditProfile(){
 
-    const {token} = useContext(TokenContext)
+    const {token, userProfile, setUserProfile} = useContext(TokenContext)
 
     const [profile, setProfile] = useState({
         name: "",
@@ -21,6 +21,8 @@ export default function EditProfile(){
     const [age, setAge] = useState(profile.age)
     const [image, setImage] = useState(profile.image)
     const [bio, setBio] = useState(profile.bio)
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const auth = {
         headers: {
@@ -61,7 +63,7 @@ export default function EditProfile(){
     const [cancelButton, setCancelButton] = useState(false)
     const nameRef = useRef(null)
 
-    function editFormProfile(){
+    async function editFormProfile(){
         if(!cancelButton){
             setCancelButton(true)
             setEditeSaveButton("Salvar")
@@ -70,31 +72,42 @@ export default function EditProfile(){
                 nameRef.current?.focus();
             }, 0);
         } else {
-            axios.put(`${BACKEND}/myprofile`, {username: name, age, bio, image},auth)
-                                .then(response => {setProfile({
-                                    name: response.data.username,
-                                    image: response.data.image,
-                                    bio: response.data.bio,
-                                    age: response.data.age,
-                                })
-                                cancelEdit()
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Perfil atualizado com sucesso!",
-                                    text: "Suas informações foram salvas.",
-                                    confirmButtonText: "OK",
-                                    confirmButtonColor: "#1877f2",
-                                });
+            setIsLoading(true)
+            setEditeSaveButton("Salvando..")
+            try{
+                const response = await axios.put(`${BACKEND}/myprofile`, {username: name, age, bio, image},auth)
+                console.log(response)
+                setProfile({
+                                name: response.data.username,
+                                image: response.data.image,
+                                bio: response.data.bio,
+                                age: response.data.age,
                             })
-                                .catch(e => {
-                                    Swal.fire({
-                                        icon: "error",
-                                        title: "Erro no carregamento do seu perfil",
-                                        text: "Um erro aconteceu. Atualize a página ou tente novamente em alguns minutos.",
-                                        confirmButtonText: "OK",
-                                        confirmButtonColor: "#989ba0",
-                                    })
-                                })
+                setUserProfile({
+                                username: response.data.username,
+                                image: response.data.image,
+                })
+                Swal.fire({
+                    icon: "success",
+                    title: "Perfil atualizado com sucesso!",
+                    text: "Suas informações foram salvas.",
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#1877f2",
+                });
+            } catch(error){
+                    Swal.fire({
+                        icon: "error",
+                        title: "Erro na atualização do seu perfil",
+                        text: error.message,
+                        confirmButtonText: "OK",
+                        confirmButtonColor: "#989ba0",
+                    })
+                    cancelEdit()
+                }finally {
+            
+                cancelEdit()
+                setIsLoading(false)
+            }
         }
     }
 
@@ -119,8 +132,8 @@ export default function EditProfile(){
             </Comands>
             <Box>
                 <MainProfile>
-                    <ImgProfile src = {token.image}></ImgProfile>
-                    <p>{token.username}</p>
+                    <ImgProfile src = {userProfile.image}></ImgProfile>
+                    <p>{userProfile.username}</p>
                 </MainProfile>
                 <EditFormProfile>
                     <Forms>
@@ -132,7 +145,7 @@ export default function EditProfile(){
                             onChange={e => setName(e.target.value)}
                             value={name}
                             $size={"60px"}
-                            disabled={!cancelButton}
+                            disabled={!cancelButton || isLoading}
                             ref={nameRef}                       
                         />
                         <label htmlFor="age"> Idade </label>
@@ -142,7 +155,7 @@ export default function EditProfile(){
                             onChange={e => setAge(e.target.value)}
                             value={age}
                             $size={"60px"}
-                            disabled={!cancelButton} 
+                            disabled={!cancelButton || isLoading} 
                         />
                         <label htmlFor="image"> Imagem </label>
                         <Enter 
@@ -152,7 +165,7 @@ export default function EditProfile(){
                             onChange={e => setImage(e.target.value)}
                             value={image}
                             $size={"60px"}
-                            disabled={!cancelButton} 
+                            disabled={!cancelButton || isLoading} 
                         />
                         <label htmlFor="bio"> Sobre </label>
                         <Enter 
@@ -161,7 +174,7 @@ export default function EditProfile(){
                             onChange={e => setBio(e.target.value)}
                             value={bio}
                             $size={"120px"}
-                            disabled={!cancelButton} 
+                            disabled={!cancelButton || isLoading} 
                         />
                     </Forms>
                 </EditFormProfile>

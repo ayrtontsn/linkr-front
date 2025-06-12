@@ -12,8 +12,10 @@ export default function Linkr() {
     return stored ? JSON.parse(stored) : null;
   });
 
+  const [userProfile, setUserProfile] = useState(token)
+
   return (
-    <TokenContext.Provider value={{ token, setToken }}>
+    <TokenContext.Provider value={{ token, setToken, userProfile, setUserProfile }}>
       <BrowserRouter
         future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
       >

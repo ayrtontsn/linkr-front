@@ -8,7 +8,7 @@ import postFeed from "../components/posts";
 
 export default function FeedPage(){
     const navigate = useNavigate();
-    const {token, setToken } = useContext(TokenContext);
+    const {token, setToken, userProfile, setUserProfile } = useContext(TokenContext);
     const [activeMenu, setActiveMenu] = useState(false)
     const [activeNewPost, setActiveNewPost] = useState(false)
     const [allPosts, setAllPosts] = useState(null);
@@ -64,7 +64,7 @@ export default function FeedPage(){
                 </NewPost>
                 <MenuContainer ref={menuRef}>
                     <Menu onClick={handleMenuToggle}>
-                        <Img src={token.image || null}></Img>
+                        <Img src={userProfile.image || null}></Img>
                         <ion-icon name="menu"></ion-icon>
                     </Menu>
                     <AbaMenu $active = {activeMenu}>
