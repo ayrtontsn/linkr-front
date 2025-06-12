@@ -9,7 +9,8 @@ import EditPostModal from "../components/EditPostModal";
 import DeletePostModal from "../components/DeletePostModal";
 import Header from "../components/Header";
 import postFeed from "../components/posts";
-import Swal from "sweetalert2"
+import Swal from "sweetalert2";
+import { IoPersonAddOutline, IoPersonRemoveOutline } from "react-icons/io5";
 
 export default function UserPage() {
   const navigate = useNavigate();
@@ -186,13 +187,7 @@ export default function UserPage() {
               >
                 <FollowContent>
                   <span>{isFollowing ? "Parar de seguir" : "Seguir"}</span>
-                  <ion-icon
-                    name={
-                      isFollowing
-                        ? "person-remove-outline"
-                        : "person-add-outline"
-                    }
-                  ></ion-icon>
+                  {isFollowing ? <IoPersonRemoveOutline className="person-icon" /> : <IoPersonAddOutline className="person-icon" />}
                 </FollowContent>
                 {followsLoggedUser && !isFollowing && (
                   <StatsFollowButtonText>Segue você</StatsFollowButtonText>
@@ -367,8 +362,7 @@ const FollowContent = styled.div`
     font-size: 17px;
     margin-right: 10px;
   }
-  ion-icon {
-    --ionicon-stroke-width: 46px;
+  .person-icon {
     font-size: 18px;
   }
 `;
@@ -434,225 +428,4 @@ const PostsContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const Post = styled.div`
-  width: 100%;
-  border-radius: 16px;
-  background-color: #171717;
-  padding: 20px;
-  margin-bottom: 20px;
-  position: relative;
-
-  @media (max-width: 768px) {
-    border-radius: 0;
-    width: 100%;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-`;
-
-const User = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  width: 100%;
-
-  @media (max-width: 768px) {
-    position: static;
-  }
-`;
-
-const UpdateDeleteIcons = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 32px;
-  position: absolute;
-  right: 20px;
-  bottom: 233px;
-
-  ion-icon {
-    font-size: 25px;
-    color: #ffffff;
-    cursor: pointer;
-    @media (max-width: 768px) {
-      font-size: 20px;
-    }
-  }
-
-  span {
-    font-size: 25px;
-    color: #ffffff;
-    cursor: pointer;
-    @media (max-width: 768px) {
-      font-size: 20px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    position: static;
-  }
-`;
-
-const UserImg = styled.img`
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 5px solid #333333;
-  position: absolute;
-  z-index: 1;
-  bottom: 220px;
-  @media (max-width: 768px) {
-    position: static;
-    border: none;
-    margin-right: 15px;
-    width: 40px;
-    height: 40px;
-  }
-`;
-
-const Username = styled.span`
-  color: #ffffff;
-  position: absolute;
-  z-index: 0;
-  bottom: 229px;
-  left: 30px;
-  font-family: "Lato", sans-serif;
-  font-size: 19px;
-  font-weight: 400;
-  background-color: #333333;
-  padding-left: 50px;
-  padding-right: 8px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  border-radius: 15px;
-  @media (max-width: 768px) {
-    position: absolute;
-    bottom: 290px;
-    left: 85px;
-    border-radius: 0;
-    padding: 0;
-    background-color: transparent;
-    font-size: 16px;
-  }
-`;
-
-const Content = styled.div`
-  margin-top: 55px;
-  display: flex;
-
-  @media (max-width: 768px) {
-    flex-direction: column-reverse;
-    margin-top: 0;
-    align-items: flex-start;
-  }
-`;
-
-const Likes = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  margin-right: 20px;
-
-  ion-icon {
-    font-size: 20px;
-    color: #ffffff;
-    margin-bottom: 5px;
-    cursor: pointer;
-  }
-
-  p {
-    color: #ffffff;
-    font-family: "Lato", sans-serif;
-    font-size: 11px;
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: row;
-
-    ion-icon {
-      margin-right: 5px;
-      margin-bottom: 0;
-    }
-  }
-`;
-
-const Box = styled.div`
-  flex: 1;
-`;
-
-const Description = styled.p`
-  color: #b7b7b7;
-  font-family: "Lato", sans-serif;
-  font-size: 17px;
-  margin-bottom: 15px;
-`;
-
-const MetaData = styled.a`
-  display: flex;
-  border: 1px solid #4d4d4d;
-  border-radius: 11px;
-  overflow: hidden;
-  text-decoration: none;
-  @media (max-width: 768px) {
-    margin-bottom: 15px;
-  }
-`;
-
-const MetaContent = styled.div`
-  flex: 1;
-  padding: 15px;
-`;
-
-const MetaTitle = styled.h3`
-  color: #cecece;
-  font-family: "Lato", sans-serif;
-  font-size: 16px;
-  margin: 0 0 10px 0;
-`;
-
-const MetaDescription = styled.p`
-  color: #9b9595;
-  font-family: "Lato", sans-serif;
-  font-size: 11px;
-  margin: 0 0 10px 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
-const MetaUrl = styled.p`
-  color: #9b9595;
-  font-family: "Lato", sans-serif;
-  font-size: 11px;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const MetaImage = styled.img`
-  width: 153px;
-  height: 153px;
-  object-fit: cover;
-
-  @media (max-width: 768px) {
-    width: 100px;
-    height: 100px;
-  }
-`;
-
-const NoPostsMessage = styled.p`
-  color: #ffffff;
-  font-family: "Lato", sans-serif;
-  font-size: 20px;
-  text-align: center;
-  margin-top: 50px;
 `;

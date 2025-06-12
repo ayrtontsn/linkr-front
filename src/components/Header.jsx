@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TokenContext from "../contexts/TokenContext";
+import { IoMenu, IoCreateOutline, IoSearch, IoPersonAdd, IoPersonRemove } from "react-icons/io5";
+import { FiEdit } from "react-icons/fi";
 
 export default function Header({ 
   showFollowButton = false, 
@@ -60,28 +62,26 @@ export default function Header({
           onClick={onFollowToggle}
           $isFollowing={isFollowing}
         >
-          <ion-icon
-            name={isFollowing ? "person-remove" : "person-add"}
-          ></ion-icon>
+          {isFollowing ? <IoPersonRemove /> : <IoPersonAdd />}
         </FollowButtonMobile>
       )}
       
       {showNewPostButton && (
         <NewPostButtonMobile onClick={onNewPostToggle}>
-          <ion-icon name="create"></ion-icon>
+          <FiEdit />
         </NewPostButtonMobile>
       )}
       
       {showSearchButton && (
         <SearchButtonMobile>
-          <ion-icon name="search"></ion-icon>
+          <IoSearch />
         </SearchButtonMobile>
       )}
       
       <MenuContainer ref={menuRef}>
         <Menu onClick={handleMenuToggle}>
           <Img src={userProfile?.image || token?.image || null} alt="Profile" />
-          <ion-icon name="menu"></ion-icon>
+          <IoMenu className="io-menu"/>
         </Menu>
         <AbaMenu $active={activeMenu}>
           <BotaoMenu onClick={handleMyProfile}>Meu Perfil</BotaoMenu>
@@ -148,7 +148,7 @@ const Menu = styled.div`
   border-radius: 10px;
   padding: 3px;
   cursor: pointer;
-  ion-icon {
+  .io-menu {
     @media (max-width: 768px) {
       display: none;
     }

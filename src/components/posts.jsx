@@ -1,14 +1,16 @@
-import styled from "styled-components"
-import { BACKEND } from "./mock"
-import axios from "axios"
-import { useContext, useEffect, useState } from "react"
-import { Oval } from "react-loader-spinner"
-import TokenContext from "../contexts/TokenContext"
-import Swal from "sweetalert2"
+import styled from "styled-components";
+import { BACKEND } from "./mock";
+import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import { Oval } from "react-loader-spinner";
+import TokenContext from "../contexts/TokenContext";
+import Swal from "sweetalert2";
 import EditPostModal from "./EditPostModal";
 import DeletePostModal from "./DeletePostModal";
 import { useNavigate } from "react-router-dom";
-import { Tooltip } from 'react-tooltip'
+import { Tooltip } from 'react-tooltip';
+import { FiTrash, FiEdit2 } from "react-icons/fi";
+import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
 
 export default function postFeed(allPosts, setAllPosts, routeGetPosts){
     const {token, userProfile} = useContext(TokenContext)
@@ -29,6 +31,7 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
             const route = BACKEND+routeGetPosts
             const requisition = axios.get(route, auth)
                                     .then(response => {setAllPosts(response.data)
+                                        console.log(response.data)
                                     })
                                     
                                     .catch(e => {
@@ -138,7 +141,7 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
 
         return `${likes[0].name} e ${totalLikes - 1} ${totalLikes - 1 === 1 ? "outra pessoa" : "outras pessoas"} curtiram`;
         };
-
+        console.log(userProfile)
     return (
         <>
             <NoItens $noitens={allPosts.length}>
@@ -148,27 +151,19 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
             <Post key={post.id}>
                 <User>
                     <Img 
-                        src={post.userImage || userProfile.image} 
+                        src={post.user.image || userProfile.image} 
                         onClick={() => navigateToUserProfile(post.userId)}
                         style={{ cursor: 'pointer' }}
                     />
                     <Username 
                         onClick={() => navigateToUserProfile(post.userId)}
                     >
-                        {post.userName || userProfile.username}
+                        {post.user.username || userProfile.username}
                     </Username>
                     {token.id === post.userId && (
                     <UpdateDeleteIcons>
-                      <span
-                        class="material-symbols-outlined"
-                        onClick={() => handleEditClick(post)}
-                      >
-                        edit
-                      </span>
-                      <ion-icon
-                        name="trash"
-                        onClick={() => handleDeleteClick(post.id)}
-                      ></ion-icon>
+                        <FiEdit2 className="user-icon" onClick={() => handleEditClick(post)}/>
+                        <FiTrash className="user-icon" onClick={() => handleDeleteClick(post.id)}/>
                     </UpdateDeleteIcons>
                   )}
                 </User>
@@ -179,7 +174,18 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
                     data-tooltip-id = "tooltip-likes"
                     style = {{ cursor: 'pointer' }}
                     >
-                        <ion-icon name="heart" onClick={() => handleLike(post.id)}></ion-icon>
+                        {post.likes.some((like) => like.id === token.id) ? (
+                            <IoHeartSharp
+                            className="heart-icon"
+                            style={{ color: "#FF0000" }}
+                            onClick={() => handleLike(post.id)}
+                            />
+                        ) : (
+                            <IoHeartOutline
+                            className="heart-icon"
+                            onClick={() => handleLike(post.id)}
+                            />
+                        )}
                         <p>{post.likes.length} likes</p>
                         <h4> · {getLikeMessage(post.likes)}</h4>
                         <Tooltip id="tooltip-likes" className="custom-tooltip"/>
@@ -260,17 +266,7 @@ const UpdateDeleteIcons = styled.div`
   position: absolute;
   right: 20px;
   bottom: 233px;
-
-  ion-icon {
-    font-size: 25px;
-    color: #ffffff;
-    cursor: pointer;
-    @media (max-width: 768px) {
-      font-size: 20px;
-    }
-  }
-
-  span {
+  .user-icon {
     font-size: 25px;
     color: #ffffff;
     cursor: pointer;
@@ -502,7 +498,7 @@ const Likes = styled.div`
     margin: 0;
     width: 10%;
     color: ${props => (props.$likeCollor ? "#FF0000" : "#FFFFFF")};
-    ion-icon{
+    .heart-icon {
         font-size: 18px;
     }
 
