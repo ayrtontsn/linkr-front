@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import FeedPage from "./pages/feed";
+import UserPage from "./pages/UserPage";
 import { useState } from "react";
 import TokenContext from "./contexts/TokenContext";
 import MyProfilePage from "./pages/myProfile";
@@ -24,6 +25,7 @@ export default function Linkr() {
           <Route path="/sign-up" element={<SignUpPage />} />
           <Route path="/feed" element={<FeedPage />} />
           <Route path="/user/my-profile" element={<MyProfilePage />} />
+          <Route path="/user/:id" element={<UserPage />} />
         </Routes>
       </BrowserRouter>
     </TokenContext.Provider>

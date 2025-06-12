@@ -3,10 +3,11 @@ import TokenContext from "../contexts/TokenContext";
 import axios from "axios";
 import { BACKEND } from "./mock";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 export default function suggestionsUsers(){
     const {token, setToken} = useContext(TokenContext);
-
+    const navigate = useNavigate();
     const [suggestions, setSuggestions] = useState([])
     const auth = {
         headers: {
@@ -24,7 +25,11 @@ export default function suggestionsUsers(){
             }
         }
         suggestionsReq()
-        },[])
+        },[token?.token])
+    
+    const navigateToUserProfile = (userId) => {
+        navigate(`/user/${userId}`);
+    };
 
     return(
         
@@ -34,7 +39,7 @@ export default function suggestionsUsers(){
             </Title>
             
             {suggestions.map (userSug => 
-                <User key={userSug.id}>
+                <User key={userSug.id} onClick={() => navigateToUserProfile(userSug.id)}>
                     <ImageSuggest src={userSug.image}></ImageSuggest>
                     <p>{userSug.username}</p>
                 </User>
@@ -56,6 +61,7 @@ const User = styled.div`
     margin: 10px;
     align-items: center;
     border-radius: 10px;
+    cursor: pointer;
 
     p{
         font-size: 19px;

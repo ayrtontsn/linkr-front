@@ -7,6 +7,7 @@ import TokenContext from "../contexts/TokenContext"
 import Swal from "sweetalert2"
 import EditPostModal from "./EditPostModal";
 import DeletePostModal from "./DeletePostModal";
+import { useNavigate } from "react-router-dom";
 import { Tooltip } from 'react-tooltip'
 
 export default function postFeed(allPosts, setAllPosts, routeGetPosts){
@@ -15,6 +16,7 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
     const [editingPostData, setEditingPostData] = useState(null);
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const [deletingPostId, setDeletingPostId] = useState(null);
+    const navigate = useNavigate();
 
     const auth = {
         headers: {
@@ -107,6 +109,10 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
         setAllPosts(currentPosts => currentPosts.filter(post => post.id !== postId));
     };
 
+    const navigateToUserProfile = (userId) => {
+        navigate(`/user/${userId}`);
+    };
+
     function getLikeMessage(likes) {
         const totalLikes = likes.length;
 
@@ -138,16 +144,21 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
         {allPosts.map(post => 
             <Post key={post.id}>
                 <User>
-                    <UserInfo>
-                        <Img src={post.userImage || userProfile.image}></Img>
+                    <Img 
+                        src={post.userImage || userProfile.image} 
+                        onClick={() => navigateToUserProfile(post.userId)}
+                        style={{ cursor: 'pointer' }}
+                    />
+                    <Username 
+                        onClick={() => navigateToUserProfile(post.userId)}
+                    >
                         {post.userName || userProfile.username}
-                    </UserInfo>
-
+                    </Username>
                     {token.id === post.userId && (
-                    <UserInfo>
-                        <ion-icon name="create" onClick={() => handleEditClick(post)}></ion-icon>
-                        <ion-icon name="trash" onClick={() => handleDeleteClick(post.id)}></ion-icon>
-                    </UserInfo>
+                        <>
+                            <span class="material-symbols-outlined" onClick={() => handleEditClick(post)}>edit</span>
+                            <ion-icon name="trash" onClick={() => handleDeleteClick(post.id)}></ion-icon>
+                        </>
                     )}
                 </User>
                 <Content>
@@ -221,9 +232,15 @@ const User = styled.div`
     color: #FFFFFF;
 `
 
-const UserInfo = styled.div`
-    align-items: center;
-    display: flex;
+const Username = styled.span`
+    color: #FFFFFF;
+    font-family: "Lato", sans-serif;
+    font-size: 19px;
+    cursor: pointer;
+    
+    &:hover {
+        text-decoration: underline;
+    }
 `
 
 const Img = styled.img`
