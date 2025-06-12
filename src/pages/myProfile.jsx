@@ -3,12 +3,12 @@ import newPost from "../components/newPost";
 import { useContext, useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import TokenContext from "../contexts/TokenContext";
-import suggestionsUsers from "../components/suggestions";
 import postFeed from "../components/posts";
+import EditProfile from "../components/EditProfile";
 
-export default function FeedPage(){
+export default function MyProfilePage(){
     const navigate = useNavigate();
-    const {token, setToken, userProfile, setUserProfile } = useContext(TokenContext);
+    const {token, setToken, userProfile } = useContext(TokenContext);
     const [activeMenu, setActiveMenu] = useState(false)
     const [activeNewPost, setActiveNewPost] = useState(false)
     const [allPosts, setAllPosts] = useState(null);
@@ -27,11 +27,6 @@ export default function FeedPage(){
 
     const handleMenuItemClick = () => {
         navigate("/user/my-profile");
-    };
-
-    const handleMyProfile = () => {
-        navigate(`/user/${token.id}`);
-        handleMenuItemClick();
     };
 
     const handleNewPost = (newPost) => {
@@ -73,48 +68,53 @@ export default function FeedPage(){
                         <ion-icon name="menu"></ion-icon>
                     </Menu>
                     <AbaMenu $active = {activeMenu}>
-                        <BotaoMenu onClick={handleMyProfile} data-test="my-profile">Meu Perfil</BotaoMenu>
+                        <BotaoMenu onClick={handleMenuItemClick}>Meu Perfil</BotaoMenu>
                         <BotaoMenu onClick={handleLogout}>Sair</BotaoMenu>
                     </AbaMenu>
                 </MenuContainer>
             </Header>
-            <Title><h2>Feed</h2></Title>
+            <ProfileEdit>
+                {EditProfile()}
+            </ProfileEdit>
+            <Title><h2>Meus Posts</h2></Title>
             <Feed>
                 <Post>
-                    {newPost(activeNewPost, handleNewPost)}
-                    {postFeed(allPosts, setAllPosts, "/allposts")}
+                    <NewPost>
+                        {newPost(activeNewPost, handleNewPost)}
+                    </NewPost>
+                    {postFeed(allPosts, setAllPosts, `/posts/user/${token.id}`)}
                 </Post>
-                <Suggestions>
-                    {suggestionsUsers()}
-                </Suggestions>
             </Feed>
 
         </Back>
     )
 
 }
+
+const ProfileEdit = styled.div`
+    display: block;
+    width: 100%;
+    max-width: 1019px;
+    justify-items: end;
+    align-content: end;
+    padding: 70px 0 0 0;
+
+    @media (max-width: 768px) {
+        padding: 0;
+    }
+`
+
 const Feed = styled.div`
     display: flex;
     justify-content: center;
     width: 100vw;
-    height: 100%;
 `
 
 const Post = styled.div`
+    width: 100%;
     display: block;
     justify-items: center;
     overflow-y: scroll;
-    height: calc(98% - 125px);
-`
-
-const Suggestions = styled.div`
-    display: block;
-    height: fit-content;
-    width: 328px;
-    background-color: #151515;
-    @media (max-width: 1024px) {
-        display: none;
-    }
 `
 
 const Back = styled.div`
@@ -125,6 +125,11 @@ const Back = styled.div`
     width: 100vw;
     height: 100%;
     left: 0;
+    overflow-y:  scroll;
+
+    @media (max-width: 768px) {
+        height: calc(100% - 65px);
+    }
 `
 const Header = styled.div`
     display: flex;

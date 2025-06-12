@@ -10,8 +10,8 @@ import DeletePostModal from "./DeletePostModal";
 import { useNavigate } from "react-router-dom";
 import { Tooltip } from 'react-tooltip'
 
-export default function postFeed(allPosts, setAllPosts){
-    const {token} = useContext(TokenContext)
+export default function postFeed(allPosts, setAllPosts, routeGetPosts){
+    const {token, userProfile} = useContext(TokenContext)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPostData, setEditingPostData] = useState(null);
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
@@ -26,8 +26,12 @@ export default function postFeed(allPosts, setAllPosts){
 
     useEffect(() =>{
             if (!allPosts) {
-            const requisition = axios.get(`${BACKEND}/allposts`, auth)
-                                    .then(response => {setAllPosts(response.data)})
+            const route = BACKEND+routeGetPosts
+            const requisition = axios.get(route, auth)
+                                    .then(response => {setAllPosts(response.data)
+                                        console.log(response.data[0])
+                                    })
+                                    
                                     .catch(e => {
                                         Swal.fire({
                                             icon: "error",
@@ -68,7 +72,7 @@ export default function postFeed(allPosts, setAllPosts){
                 ...post,
                 likes: userAlreadyLiked
                     ? post.likes.filter(user => user.id !== token.id) 
-                    : [...post.likes, { nome: token.username, id: token.id }]                
+                    : [...post.likes, { nome: userProfile.username, id: token.id }]                
                 };
             }
             return post;
@@ -141,15 +145,14 @@ export default function postFeed(allPosts, setAllPosts){
             <Post key={post.id}>
                 <User>
                     <Img 
-                        src={post.userImage ||null} 
+                        src={post.userImage || userProfile.image} 
                         onClick={() => navigateToUserProfile(post.userId)}
                         style={{ cursor: 'pointer' }}
                     />
                     <Username 
                         onClick={() => navigateToUserProfile(post.userId)}
-                        data-test="username"
                     >
-                        {post.userName}
+                        {post.userName || userProfile.username}
                     </Username>
                     {token.id === post.userId && (
                         <>

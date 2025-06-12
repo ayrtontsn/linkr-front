@@ -5,6 +5,7 @@ import FeedPage from "./pages/feed";
 import UserPage from "./pages/UserPage";
 import { useState } from "react";
 import TokenContext from "./contexts/TokenContext";
+import MyProfilePage from "./pages/myProfile";
 
 export default function Linkr() {
   const [token, setToken] = useState(() => {
@@ -12,8 +13,10 @@ export default function Linkr() {
     return stored ? JSON.parse(stored) : null;
   });
 
+  const [userProfile, setUserProfile] = useState(token)
+
   return (
-    <TokenContext.Provider value={{ token, setToken }}>
+    <TokenContext.Provider value={{ token, setToken, userProfile, setUserProfile }}>
       <BrowserRouter
         future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
       >
@@ -21,6 +24,7 @@ export default function Linkr() {
           <Route path="/" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
           <Route path="/feed" element={<FeedPage />} />
+          <Route path="/user/my-profile" element={<MyProfilePage />} />
           <Route path="/user/:id" element={<UserPage />} />
         </Routes>
       </BrowserRouter>
