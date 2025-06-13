@@ -31,7 +31,6 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
             const route = BACKEND+routeGetPosts
             const requisition = axios.get(route, auth)
                                     .then(response => {setAllPosts(response.data)
-                                        console.log(response.data)
                                     })
                                     
                                     .catch(e => {
@@ -62,6 +61,8 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
             </Loading>
         )
     }
+
+    console.log(allPosts)
 
     const handleLike = async (postId) => {
 
@@ -141,7 +142,6 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
 
         return `${likes[0].name} e ${totalLikes - 1} ${totalLikes - 1 === 1 ? "outra pessoa" : "outras pessoas"} curtiram`;
         };
-        console.log(userProfile)
     return (
         <>
             <NoItens $noitens={allPosts.length}>
@@ -151,14 +151,14 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
             <Post key={post.id}>
                 <User>
                     <Img 
-                        src={post.user.image || userProfile.image} 
+                        src={post.userImage} 
                         onClick={() => navigateToUserProfile(post.userId)}
                         style={{ cursor: 'pointer' }}
                     />
                     <Username 
                         onClick={() => navigateToUserProfile(post.userId)}
                     >
-                        {post.user.username || userProfile.username}
+                        {post.userName || userProfile.username}
                     </Username>
                     {token.id === post.userId && (
                     <UpdateDeleteIcons>
@@ -170,23 +170,24 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
                 <Content>
                     <Likes 
                     $likeCollor = {post.likes.some((like) => like.id === token.id)}
-                    data-tooltip-content = {getLikeMessage(post.likes)}
-                    data-tooltip-id = "tooltip-likes"
-                    style = {{ cursor: 'pointer' }}
                     >
                         {post.likes.some((like) => like.id === token.id) ? (
                             <IoHeartSharp
                             className="heart-icon"
-                            style={{ color: "#FF0000" }}
+                            style={{ color: "#FF0000" , cursor: 'pointer'}}
                             onClick={() => handleLike(post.id)}
                             />
                         ) : (
                             <IoHeartOutline
                             className="heart-icon"
+                            style = {{ cursor: 'pointer' }}
                             onClick={() => handleLike(post.id)}
                             />
                         )}
-                        <p>{post.likes.length} likes</p>
+                        <p                     
+                        data-tooltip-content = {getLikeMessage(post.likes)}
+                        data-tooltip-id = "tooltip-likes"
+                        style = {{ cursor: 'pointer' }}>{post.likes.length} likes</p>
                         <h4> · {getLikeMessage(post.likes)}</h4>
                         <Tooltip id="tooltip-likes" className="custom-tooltip"/>
                     </Likes>
