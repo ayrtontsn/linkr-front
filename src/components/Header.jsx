@@ -103,6 +103,12 @@ export default function Header({
     };
   }, [activeMenu]);
 
+  const navigateToUserPage = (userId) => {
+    setShowSearchBar(!showSearchBar)
+    setSearchText("")
+    navigate(`/user/${userId}`)
+  }
+
   return (
     <HeaderContainer>
       <h1 onClick={() => navigate("/feed")} style={{ cursor: "pointer" }}>
@@ -119,9 +125,20 @@ export default function Header({
             onChange={handleSearch}
             className="searchInput">
           </DebounceInput>
+          <UsersSearch>
+            {resultSearchUsers.map(user => (
+              <EachUserSearch key={user.id} style={{ cursor: 'pointer' }} onClick={() => navigateToUserPage(user.id)}>
+                    <ImgSearch src={user.image}></ImgSearch>
+                    <NameSearch>
+                        {user.username}
+                    </NameSearch>
+              </EachUserSearch>
+            ))}
+          </UsersSearch>
         </SearchBar>
         <FiSearch className="search-icon"></FiSearch>
         <CloseSearch onClick={onSearchToggle}> X </CloseSearch>
+
       </SearchContainer>
       
       
@@ -370,6 +387,9 @@ const SearchContainer = styled.div`
 `
 
 const SearchBar = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   .searchInput{
     background-color: #FFFFFF;
     width: 100%;
@@ -378,13 +398,12 @@ const SearchBar = styled.div`
     border: 0;
     align-items: center;
     padding: 10px 40px 10px 12px; 
-
     font-family: "Lato", sans-serif;
-    font-size: 19px;
+    font-size : 19px;
   }
 
   @media (max-width: 768px) {
-
+    display: block;
     width: 80%;
     height: 43px;
     background-color: #FFFFFF;
@@ -392,6 +411,20 @@ const SearchBar = styled.div`
     margin: 0 10px;
   }
   `
+
+const UsersSearch = styled.ul`
+  background-color: rgba(213, 213, 213, 0.5);
+  max-height: 187px;
+  width: 90%;
+  border-radius: 0 0 10px 10px;
+  overflow-y: auto;
+
+  z-index: 5;
+  @media (max-width: 768px) {
+    width: calc(100vw - 20px);
+    margin-top: 14px;
+  }
+`
 const CloseSearch = styled.div`
   background-color: #FF0000;
   display: flex;
@@ -400,11 +433,42 @@ const CloseSearch = styled.div`
   align-items: center;
   border-radius: 15px;
   height: 43px;
-  width: calc(12%);
+  width: 100px;
   font-weight: 700;
+  margin-right: 10px;
   
   @media (min-width: 768px) {
     display: none;
   }
+`
 
+const EachUserSearch = styled.li`
+  background-color: rgba(51, 51, 51, 0.82);
+  height: 47px;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px;
+  align-items: center;
+  width: fit-content;
+  border-radius: 10px;
+  padding: 0 10px;
+
+  @media (max-width: 768px) {
+    width: calc(100% - 20px);
+  }
+`
+
+const ImgSearch = styled.img`
+  border-radius: 100%;
+  width: 39px;
+  height: 39px;
+  object-fit: cover;
+  margin-right: 10px;
+`
+
+const NameSearch = styled.p`
+  color: #FFFFFF;
+  font-size: 19px;
+  font-weight: 400;
+  font-family: "Lato", sans-serif;
 `
