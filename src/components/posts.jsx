@@ -62,8 +62,6 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
         )
     }
 
-    console.log(allPosts)
-
     const handleLike = async (postId) => {
 
         await axios.put(`${BACKEND}/likepost`, {postId},auth)

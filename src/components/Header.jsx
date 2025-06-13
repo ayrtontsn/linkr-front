@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 import TokenContext from "../contexts/TokenContext";
 import { IoMenu, IoCreateOutline, IoSearch, IoPersonAdd, IoPersonRemove } from "react-icons/io5";
 import { FiEdit, FiSearch } from "react-icons/fi";
+import {DebounceInput} from 'react-debounce-input';
+import { BACKEND } from "./mock";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 export default function Header({ 
   showFollowButton = false, 
@@ -18,7 +22,45 @@ export default function Header({
   const [activeMenu, setActiveMenu] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [showSearchBar, setShowSearchBar] = useState(false);
+  const [allUsers, setAllUsers] = useState("")
+  const [resultSearchUsers, setResultSearchUsers] = useState([])
   const menuRef = useRef(null);
+
+  const auth = {
+    headers: {
+      Authorization: `Bearer ${token.token}`
+    }
+  }
+
+  useEffect(() =>{
+            const route = BACKEND+"/linkers"
+            const requisition = axios.get(route, auth)
+                                    .then(response => {setAllUsers(response.data)
+                                    })
+                                    
+                                    .catch(e => {
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: "Erro no carregamento da página",
+                                            text: "Um erro aconteceu. Atualize a página ou tente novamente em alguns minutos.",
+                                            confirmButtonText: "OK",
+                                            confirmButtonColor: "#1877f2",
+                                        })
+                                    })
+        }, [])
+  
+  const handleSearch = (e) => {
+    const value = e.target.value
+    setSearchText(value);
+    let userFilter = []
+    if(value){
+      userFilter = allUsers.filter((user) =>{
+        return user.username.toLowerCase().includes(value.toLowerCase());
+      })
+    }
+
+    setResultSearchUsers(userFilter)
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -36,6 +78,13 @@ export default function Header({
     navigate("/user/my-profile");
     setActiveMenu(false);
   };
+
+  const onSearchToggle = () => {
+    setShowSearchBar(!showSearchBar)
+    if(!activeMenu){
+      setSearchText("")
+    }
+  }
 
   // Click outside menu handler
   useEffect(() => {
@@ -60,14 +109,19 @@ export default function Header({
         Linkr
       </h1>
       <SearchContainer $active={showSearchBar}>
-        <SearchBar
-          type="text"
-          placeholder="Procurar linkrs"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-        ></SearchBar>
+        <SearchBar>
+          <DebounceInput
+            minLength={3}
+            debounceTimeout={300}
+            type="text"
+            placeholder="Procurar linkrs"
+            value={searchText}
+            onChange={handleSearch}
+            className="searchInput">
+          </DebounceInput>
+        </SearchBar>
         <FiSearch className="search-icon"></FiSearch>
-        <CloseSearch onClick={() => setShowSearchBar(!showSearchBar)}> X </CloseSearch>
+        <CloseSearch onClick={onSearchToggle}> X </CloseSearch>
       </SearchContainer>
       
       
@@ -88,7 +142,7 @@ export default function Header({
       
       {showSearchButton && (
         <SearchButtonMobile>
-          <IoSearch onClick={() => setShowSearchBar(!showSearchBar)}/>
+          <IoSearch onClick={onSearchToggle}/>
         </SearchButtonMobile>
       )}
       
@@ -315,16 +369,20 @@ const SearchContainer = styled.div`
   }
 `
 
-const SearchBar = styled.textarea`
-  background-color: #FFFFFF;
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-  align-items: center;
-  padding: 10px 40px 10px 12px; 
+const SearchBar = styled.div`
+  .searchInput{
+    background-color: #FFFFFF;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    border: 0;
+    align-items: center;
+    padding: 10px 40px 10px 12px; 
 
-  font-family: "Lato", sans-serif;
-  font-size: 19px;
+    font-family: "Lato", sans-serif;
+    font-size: 19px;
+  }
+
   @media (max-width: 768px) {
 
     width: 80%;
@@ -344,5 +402,9 @@ const CloseSearch = styled.div`
   height: 43px;
   width: calc(12%);
   font-weight: 700;
+  
+  @media (min-width: 768px) {
+    display: none;
+  }
 
 `
