@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { BACKEND } from "./mock";
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Oval } from "react-loader-spinner";
 import TokenContext from "../contexts/TokenContext";
 import Swal from "sweetalert2";
@@ -12,12 +12,16 @@ import { Tooltip } from 'react-tooltip';
 import { FiTrash, FiEdit2 } from "react-icons/fi";
 import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
 
-export default function postFeed(allPosts, setAllPosts, routeGetPosts){
+export default function postFeed({allPosts, setAllPosts, routeGetPosts}){
     const {token, userProfile} = useContext(TokenContext)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPostData, setEditingPostData] = useState(null);
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const [deletingPostId, setDeletingPostId] = useState(null);
+    const [page, setPage] = useState(1)
+    const [hasMore, setHasMore] = useState(true)
+    const loaderRef = useRef(null)
+    const [isLoadingInitial, setIsLoadingInitial] = useState(true);
     const navigate = useNavigate();
 
     const auth = {
@@ -25,27 +29,53 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
             Authorization: `Bearer ${token.token}`
         }
     }
+    const loadPosts = async (page) => {
+        try{
+            const route = BACKEND+routeGetPosts+`?page=${page}`
+            const response = await axios.get(route, auth);
+            const newPosts = response.data;
 
-    useEffect(() =>{
-            if (!allPosts) {
-            const route = BACKEND+routeGetPosts
-            const requisition = axios.get(route, auth)
-                                    .then(response => {setAllPosts(response.data)
-                                    })
-                                    
-                                    .catch(e => {
-                                        Swal.fire({
-                                            icon: "error",
-                                            title: "Erro no carregamento dos posts",
-                                            text: "Um erro aconteceu. Atualize a página ou tente novamente em alguns minutos.",
-                                            confirmButtonText: "OK",
-                                            confirmButtonColor: "#1877f2",
-                                        })
-                                    })
-                                }
-        }, [allPosts, setAllPosts])
+            setAllPosts([...(allPosts || []), ...newPosts]);
+            setHasMore(newPosts.length > 0);
+            if(page===1){
+                setIsLoadingInitial(false)
+            }
+        } catch (e){
+            Swal.fire({
+                icon: "error",
+                title: "Erro no carregamento dos posts",
+                text: "Um erro aconteceu. Atualize a página ou tente novamente em alguns minutos.",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#1877f2",
+            })
+        }
+        }
+    useEffect(() => {
+        if(hasMore) {
+            loadPosts(page);
+        }
+    },[page])
+    
+    const handleObserver = useCallback((entries) => {
+        const target = entries[0];
+        if(target.isIntersecting && hasMore){
+            setPage((prev) => prev+1);
+        }
+    }, [hasMore])
 
-    if(!allPosts){
+    useEffect(() => {
+        const observer = new IntersectionObserver (handleObserver, { threshold: 1.0});
+        if (loaderRef.current) {
+            observer.observe(loaderRef.current);
+        }
+        return () => {
+            if (loaderRef.current){
+                observer.unobserve(loaderRef.current);
+            };
+        }
+    }, [isLoadingInitial,handleObserver])
+
+    if(isLoadingInitial){
         return(
             <Loading>
                 {(<Oval
@@ -142,7 +172,7 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
         };
     return (
         <>
-            <NoItens $noitens={allPosts.length}>
+            <NoItens $noitens={allPosts.length && !isLoadingInitial}>
                 <p>Tudo limpor por aqui, nenhuma postagem no momento...</p>
             </NoItens>
         {allPosts.map(post => 
@@ -208,8 +238,12 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
                 </Content>
             </Post>
         )
-
         }
+        {hasMore && !isLoadingInitial && (
+            <div ref={loaderRef} style={{ height: "50px" }}>
+                <p>Carregando mais posts...</p>
+            </div>
+        )}
         <EditPostModal
                         isOpen={isModalOpen}
                         onClose={handleCloseModal}

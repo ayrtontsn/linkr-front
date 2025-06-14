@@ -11,7 +11,7 @@ export default function FeedPage(){
     const navigate = useNavigate();
     const {token } = useContext(TokenContext);
     const [activeNewPost, setActiveNewPost] = useState(false)
-    const [allPosts, setAllPosts] = useState(null);
+    const [allPosts, setAllPosts] = useState([]);
 
     const handleNewPost = (newPost) => {
         setAllPosts(currentPosts => [newPost, ...(currentPosts || [])]);
@@ -38,7 +38,7 @@ export default function FeedPage(){
             <Feed>
                 <Post>
                     {newPost(activeNewPost, handleNewPost)}
-                    {postFeed(allPosts, setAllPosts, "/allposts")}
+                    {postFeed({allPosts, setAllPosts, routeGetPosts: "/allposts"})}
                 </Post>
                 <Suggestions>
                     {suggestionsUsers()}

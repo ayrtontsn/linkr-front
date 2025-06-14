@@ -42,7 +42,7 @@ export default function MyProfilePage(){
                 <NewPost>
                     {newPost(activeNewPost, handleNewPost)}
                 </NewPost>
-                {postFeed(allPosts, setAllPosts, `/posts/user/${token.id}`)}
+                {postFeed({allPosts, setAllPosts, routeGetPosts: `/posts/user/${token.id}`})}
             </Post>
 
 
