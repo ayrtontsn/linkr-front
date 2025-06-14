@@ -3,7 +3,7 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import FeedPage from "./pages/feed";
 import UserPage from "./pages/UserPage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TokenContext from "./contexts/TokenContext";
 import MyProfilePage from "./pages/myProfile";
 
@@ -13,7 +13,12 @@ export default function Linkr() {
     return stored ? JSON.parse(stored) : null;
   });
 
-  const [userProfile, setUserProfile] = useState(token)
+  const [userProfile, setUserProfile] = useState("")
+
+  useEffect(()=>{
+    setUserProfile(token)
+  },[token, setToken])
+  
 
   return (
     <TokenContext.Provider value={{ token, setToken, userProfile, setUserProfile }}>

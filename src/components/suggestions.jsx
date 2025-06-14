@@ -52,6 +52,7 @@ export default function suggestionsUsers(){
 const Suggestion = styled.div`
     display: block;
     color: #FFFFFF;
+    border-radius: 20px;
 `
 
 const User = styled.div`
@@ -77,6 +78,9 @@ const Title = styled.div`
         font-weight: 400;
         font-size: 27px;
     }
+    padding:10px;
+    margin: 0 10px;
+    border-bottom: 1px solid #484848;
 `
 
 const ImageSuggest = styled.img`

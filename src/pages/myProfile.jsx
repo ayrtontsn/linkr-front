@@ -32,6 +32,7 @@ export default function MyProfilePage(){
             <Header 
                 showNewPostButton={true}
                 onNewPostToggle={handleNewPostToggle}
+                showSearchButton={true}
             />
             <ProfileEdit>
                 {EditProfile()}
@@ -41,7 +42,7 @@ export default function MyProfilePage(){
                 <NewPost>
                     {newPost(activeNewPost, handleNewPost)}
                 </NewPost>
-                {postFeed(allPosts, setAllPosts, `/posts/user/${token.id}`)}
+                {postFeed({allPosts, setAllPosts, routeGetPosts: `/posts/user/${token.id}`})}
             </Post>
 
 

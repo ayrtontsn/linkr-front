@@ -170,7 +170,7 @@ export default function UserPage() {
       />
       <UserContainer>
         <PostsContainer>
-          {postFeed(allPosts, setAllPosts, `/posts/user/${id}`)}
+          {postFeed({allPosts, setAllPosts, routeGetPosts: `/posts/user/${id}`})}
         </PostsContainer>
         <ProfileContainer>
           <ProfileImage
