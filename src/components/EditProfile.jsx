@@ -157,7 +157,8 @@ export default function EditProfile(){
                             value={name}
                             $short={true}
                             disabled={!cancelButton || isLoading}
-                            ref={nameRef}                       
+                            ref={nameRef}
+                            $editable={!cancelButton || isLoading}                       
                         />
                         <label htmlFor="age"> Idade: </label>
                         <Enter 
@@ -167,6 +168,7 @@ export default function EditProfile(){
                             value={age}
                             $short={true}
                             disabled={!cancelButton || isLoading} 
+                            $editable={!cancelButton || isLoading} 
                         />
                         <label htmlFor="image"> Imagem: </label>
                         <Enter 
@@ -176,7 +178,8 @@ export default function EditProfile(){
                             onChange={e => setImage(e.target.value)}
                             value={image}
                             $short={true}
-                            disabled={!cancelButton || isLoading} 
+                            disabled={!cancelButton || isLoading}
+                            $editable={!cancelButton || isLoading}
                         />
                         <label htmlFor="bio"> Sobre mim: </label>
                         <Enter 
@@ -185,7 +188,8 @@ export default function EditProfile(){
                             onChange={e => setBio(e.target.value)}
                             value={bio}
                             $short={false}
-                            disabled={!cancelButton || isLoading} 
+                            disabled={!cancelButton || isLoading}
+                            $editable={!cancelButton || isLoading}
                         />
                     </Forms>
                 </EditFormProfile>
@@ -211,7 +215,7 @@ const ComandsSmall = styled.div`
     @media (max-width: 768px) {
         display: flex;
         position: absolute;
-        top: 85vw;
+        top: 187px;
         right: 10%;
     }
 `
@@ -324,7 +328,10 @@ const Enter = styled.textarea`
     height: ${props => (props.$short?"60px":"120px")};
     border-radius: 5px;
     border: 0;
-    background-color: #EFEFEF;
+    background-color: ${props => (props.$editable?"#333333":"#EFEFEF")};
+    color: ${props => (props.$editable?"#EFEFEF":"#333333")};
+    border: 1px solid #EFEFEF;
+    padding: 0 10px;
     margin-top: 10px;
     overflow-wrap: break-word;
     font-size: 15px;

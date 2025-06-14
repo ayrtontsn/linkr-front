@@ -32,6 +32,7 @@ export default function MyProfilePage(){
             <Header 
                 showNewPostButton={true}
                 onNewPostToggle={handleNewPostToggle}
+                showSearchButton={true}
             />
             <ProfileEdit>
                 {EditProfile()}

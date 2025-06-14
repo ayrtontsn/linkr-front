@@ -131,7 +131,7 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
         }
 
         if (userLiked) {
-            return `Você${otherLikes.length === 1 ? "e"+otherLikes[0].name  :", "+otherLikes[0].name+" outras "+(otherLikes.length-1)} pessoas curtiram`;
+            return `Você ${otherLikes.length === 1 ? "e "+otherLikes[0].name  :", "+otherLikes[0].name+" e outras "+(otherLikes.length-1)} pessoas curtiram`;
         }
 
         if (totalLikes === 1) {
@@ -149,14 +149,14 @@ export default function postFeed(allPosts, setAllPosts, routeGetPosts){
             <Post key={post.id}>
                 <User>
                     <Img 
-                        src={post.userImage} 
+                        src={post.userImage?post.userImage:post.user.image} 
                         onClick={() => navigateToUserProfile(post.userId)}
                         style={{ cursor: 'pointer' }}
                     />
                     <Username 
                         onClick={() => navigateToUserProfile(post.userId)}
                     >
-                        {post.userName || userProfile.username}
+                        {post.userName?post.userName:post.user.username}
                     </Username>
                     {token.id === post.userId && (
                     <UpdateDeleteIcons>
@@ -251,10 +251,6 @@ const User = styled.div`
   justify-content: space-between;
   margin-bottom: 15px;
   width: 100%;
-
-  @media (max-width: 768px) {
-    position: static;
-  }
 `
 
 const UpdateDeleteIcons = styled.div`
@@ -294,15 +290,7 @@ const Username = styled.span`
     padding-top: 5px;
     padding-bottom: 5px;
     border-radius: 15px;
-    @media (max-width: 768px) {
-        position: absolute;
-        bottom: 306px;
-        left: 85px;
-        border-radius: 0;
-        padding: 0;
-        background-color: transparent;
-        font-size: 16px;
-    }
+
 `
 
 const Img = styled.img`

@@ -414,8 +414,9 @@ const SearchBar = styled.div`
 
 const UsersSearch = styled.ul`
   background-color: rgba(213, 213, 213, 0.5);
+  backdrop-filter: blur(25px);
   max-height: 187px;
-  width: 90%;
+  width: 545px;
   border-radius: 0 0 10px 10px;
   overflow-y: auto;
 
@@ -423,6 +424,7 @@ const UsersSearch = styled.ul`
   @media (max-width: 768px) {
     width: calc(100vw - 20px);
     margin-top: 14px;
+    justify-items: center;
   }
 `
 const CloseSearch = styled.div`
@@ -454,7 +456,8 @@ const EachUserSearch = styled.li`
   padding: 0 10px;
 
   @media (max-width: 768px) {
-    width: calc(100% - 20px);
+    width: calc(80%);
+    border-radius: 25px;
   }
 `
 

@@ -32,6 +32,7 @@ export default function FeedPage(){
             <Header 
                 showNewPostButton={true}
                 onNewPostToggle={handleNewPostToggle}
+                showSearchButton={true}
             />
             <Title><h2>Feed</h2></Title>
             <Feed>
@@ -50,11 +51,14 @@ export default function FeedPage(){
 }
 const Feed = styled.div`
     display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-  max-width: 990px;
-  margin-top: 30px;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 990px;
+    margin-top: 30px;
+    @media (max-width: 1023px) {
+        justify-content: center;
+    }
 `
 
 const Post = styled.div`
@@ -70,6 +74,7 @@ const Suggestions = styled.div`
     height: fit-content;
     width: 328px;
     background-color: #151515;
+    border-radius: 15px;
     @media (max-width: 1024px) {
         display: none;
     }
