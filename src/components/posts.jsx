@@ -178,16 +178,19 @@ export default function postFeed({allPosts, setAllPosts, routeGetPosts}){
         {allPosts.map(post => 
             <Post key={post.id}>
                 <User>
-                    <Img 
-                        src={post.userImage?post.userImage:post.user.image} 
-                        onClick={() => navigateToUserProfile(post.userId)}
-                        style={{ cursor: 'pointer' }}
-                    />
-                    <Username 
-                        onClick={() => navigateToUserProfile(post.userId)}
-                    >
-                        {post.userName?post.userName:post.user.username}
-                    </Username>
+                    <UserInfo>
+                        <Img 
+                            src={post.userImage?post.userImage:post.user.image} 
+                            onClick={() => navigateToUserProfile(post.userId)}
+                            style={{ cursor: 'pointer' }}
+                        />
+                        <Username 
+                            onClick={() => navigateToUserProfile(post.userId)}
+                        >
+                            {post.userName?post.userName:post.user.username}
+                        </Username>
+                    </UserInfo>
+                    
                     {token.id === post.userId && (
                     <UpdateDeleteIcons>
                         <FiEdit2 className="user-icon" onClick={() => handleEditClick(post)}/>
@@ -287,14 +290,19 @@ const User = styled.div`
   width: 100%;
 `
 
+const UserInfo = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    margin: 20px 0;
+    position: relative;
+`
+
 const UpdateDeleteIcons = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 32px;
-  position: absolute;
-  right: 20px;
-  bottom: 233px;
   .user-icon {
     font-size: 25px;
     color: #ffffff;
@@ -312,9 +320,7 @@ const UpdateDeleteIcons = styled.div`
 const Username = styled.span`
     color: #ffffff;
     position: absolute;
-    z-index: 0;
-    bottom: 229px;
-    left: 30px;
+    z-index: 0;    
     font-family: "Lato", sans-serif;
     font-size: 19px;
     font-weight: 400;
@@ -324,6 +330,7 @@ const Username = styled.span`
     padding-top: 5px;
     padding-bottom: 5px;
     border-radius: 15px;
+    border: 20px;
 
 `
 
@@ -335,9 +342,7 @@ const Img = styled.img`
   border: 5px solid #333333;
   position: absolute;
   z-index: 1;
-  bottom: 220px;
   @media (max-width: 768px) {
-    position: static;
     border: none;
     margin-right: 15px;
     width: 40px;
@@ -353,6 +358,7 @@ const MetaData = styled.a`
   text-decoration: none;
   @media (max-width: 768px) {
     margin-bottom: 15px;
+    width: 100%;
   }
 `;
 
@@ -403,6 +409,8 @@ const MetaImage = styled.img`
 const Content = styled.div`
     margin-top: 55px;
   display: flex;
+  flex-direction: row;
+  width: 100%;
 
   @media (max-width: 768px) {
     flex-direction: column-reverse;
@@ -492,7 +500,11 @@ const ImgMetaData = styled.img`
 `
 
 const Box = styled.div`
-  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  width: 100%;
+  justify-content: space-between;
 `;
 
 const Loading = styled.div`

@@ -130,8 +130,12 @@ export default function EditProfile(){
                 $cancel={cancelButton}
                 $colorCancel = {true}
                 onClick={cancelEdit}
+                style={{ cursor: 'pointer' }}
                 > Cancelar </EditButton>
-                <EditButton $cancel={true} onClick={editFormProfile}> {editeSaveButton}</EditButton>
+                <EditButton
+                $cancel={true}
+                onClick={editFormProfile}
+                style={{ cursor: 'pointer' }}> {editeSaveButton}</EditButton>
             </Comands>
             <Box>
                 <MainProfile >
