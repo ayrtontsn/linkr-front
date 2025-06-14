@@ -20,6 +20,7 @@ export default function suggestionsUsers(){
             try {
                 const response = await axios.get(`${BACKEND}/suggestions`,auth)
                 setSuggestions(Array.isArray(response.data) ? response.data : [])
+
             } catch (e){
                 setSuggestions([])
             }
@@ -31,6 +32,7 @@ export default function suggestionsUsers(){
         navigate(`/user/${userId}`);
     };
 
+
     return(
         
         <Suggestion>
@@ -39,9 +41,13 @@ export default function suggestionsUsers(){
             </Title>
             
             {suggestions.map (userSug => 
-                <User key={userSug.id} onClick={() => navigateToUserProfile(userSug.id)}>
-                    <ImageSuggest src={userSug.image}></ImageSuggest>
-                    <p>{userSug.username}</p>
+                <User 
+                key={userSug.id} onClick={() => navigateToUserProfile(userSug.id)} $isFollower={userSug.follower}>
+                    <UserSuggest>
+                        <ImageSuggest src={userSug.image}></ImageSuggest>
+                        <p>{userSug.username}</p>
+                    </UserSuggest>
+                    <h4 > Segue Você </h4>
                 </User>
             )}
         </Suggestion>
@@ -60,6 +66,8 @@ const User = styled.div`
     height: 50px;
     background-color: #333333;
     margin: 10px;
+    padding-right: 10px;
+    justify-content: space-between;
     align-items: center;
     border-radius: 10px;
     cursor: pointer;
@@ -69,8 +77,19 @@ const User = styled.div`
         font-weight: 400;
         font-family: "Lato", sans-serif;
     }
-`
 
+    h4{
+        display: ${props => (props.$isFollower?"flex":"none")};
+        font-size: 12px;
+        font-weight: 300;
+        font-family: "Lato", sans-serif;
+    }
+`
+const UserSuggest = styled.div`
+    display: flex;
+    justify-content: start;
+    align-items: center;
+`
 const Title = styled.div`
     justify-items: center;
     h1{
