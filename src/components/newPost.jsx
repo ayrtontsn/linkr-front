@@ -53,7 +53,6 @@ export default function newPost(activeNewPost, onNewPost){
                 confirmButtonColor: "#1877f2",
             });
             setbuttonPublicar("Publicar")
-            // console.log(e)
         }
     }
 
@@ -62,22 +61,26 @@ export default function newPost(activeNewPost, onNewPost){
             <Img src={userProfile.image || null}></Img>
             <NewPostForm>
                 O que você tem pra compartilhar hoje?
-                <Enter 
-                    placeholder="  http://..."
-                    required
-                    type="url"
-                    onChange={e => setUrl(e.target.value)}
-                    value={url}
-                    />
-                <Enter
-                    placeholder="  Um artigo incrível sobre #javascript"
-                    onChange={e => setDescription(e.target.value)}
-                    value={description}
-                    />
-                <Button
-                    type="submit"
-                    $disabled={buttonPublicar==="Publicar" && url?false:true}
-                >{buttonPublicar}</Button>
+                <FormDiv>
+                    <Enter 
+                        placeholder="  http://..."
+                        required
+                        type="url"
+                        onChange={e => setUrl(e.target.value)}
+                        value={url}
+                        $size="30px"
+                        />
+                    <Enter
+                        placeholder="  Um artigo incrível sobre #javascript"
+                        onChange={e => setDescription(e.target.value)}
+                        value={description}
+                        $size="66px"
+                        />
+                    <Button
+                        type="submit"
+                        $disabled={buttonPublicar==="Publicar" && url?false:true}
+                    >{buttonPublicar}</Button>
+                </FormDiv>
             </NewPostForm>
         </NewPost>
     )
@@ -100,10 +103,15 @@ const NewPost = styled.form`
 
     @media (max-width: 768px) {
         display: ${props => (props.$active ? "flex" : "none")};
+        max-width: 95%;
         position: fixed;
-        bottom: 80px;
+        bottom: 60px;
         left: 50%;
         transform: translate(-50%, 0);
+
+        padding: 0;
+        padding-bottom: 25px;
+        border-radius: 15px;
     }
 `
 
@@ -118,23 +126,29 @@ const Img = styled.img`
 `
 const NewPostForm = styled.div`
     width: calc(100% - 70px);
-    height:150px;
     display: block;
-    padding: 10px 10px 0 10px;
+    flex-wrap: wrap;
+    padding: 10px;
     color: #707070;
 
     @media (max-width: 768px){
-        width: 100vw;
+        width: 100%;
     }
+`
+const FormDiv = styled.div`
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: end; 
 `
 
 const Enter = styled.input`
     width: 100%;
-    height: 30px;
+    height: ${props => (props.$size)};
     border-radius: 5px;
     border: 0;
     background-color: #EFEFEF;
     margin-top: 5px;
+
 
     font-size: 15px;
     font-weight: 300;
@@ -150,4 +164,18 @@ const Button = styled.button`
     border: 0;
     margin-top: 5px;
     opacity:${props => (props.$disabled?0.3:1)};
+    justify-content: center;
+    align-items: center;
+
+    @media (max-width: 768px) {
+        display: flex;
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        width: 100%;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        border-top-right-radius: 0px;
+        border-top-left-radius: 0px;
+    }
 `
