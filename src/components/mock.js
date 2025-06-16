@@ -1,1 +1,1 @@
-export const BACKEND = "http://localhost:5000"
+export const BACKEND = import.meta.env.VITE_BACKEND;
